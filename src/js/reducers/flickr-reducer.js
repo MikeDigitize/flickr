@@ -1,3 +1,4 @@
+import "../utils/object-assign-polyfill";
 import { DATALOADED } from "../actions/flickr-api-actions";
 
 let initialState = {

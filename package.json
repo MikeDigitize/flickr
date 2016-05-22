@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp karma",
+    "test": "gulp karma:browser-tests",
     "start": "parallelshell \"node index.js\" \"gulp\""
   },
   "repository": {
@@ -24,6 +24,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.5.0",
     "chai": "^3.5.0",
+    "es6-promise": "^3.2.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.6.0",

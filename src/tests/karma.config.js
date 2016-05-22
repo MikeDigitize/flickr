@@ -12,6 +12,10 @@ module.exports = function(config) {
             "./**/*.js"
         ],
 
+        client : {
+            captureConsole : true
+        },
+
         preprocessors: {
             "./**/*.js": ["webpack"]
         },
@@ -56,12 +60,16 @@ module.exports = function(config) {
 
         autoWatch: false,
 
-        browsers: ["PhantomJS", "Chrome", "Firefox", "IE10"],
+        browsers: ["PhantomJS", "Chrome", "Firefox", "IE10", "IE9"],
 
         customLaunchers: {
             IE10: {
                 base: 'IE',
                 'x-ua-compatible': 'IE=EmulateIE10'
+            },
+            IE9: {
+                base: 'IE',
+                'x-ua-compatible': 'IE=EmulateIE9'
             }
         },
 

@@ -1,3 +1,5 @@
+import "es6-promise";
+
 export function getFlickrJson(tag) {
     return new Promise(function(resolve, reject) {
 
