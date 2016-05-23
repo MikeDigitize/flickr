@@ -3,7 +3,7 @@ import { DATALOADED } from "../actions/flickr-api-actions";
 
 let initialState = {
     loading : true,
-    flickrData : {},
+    flickrData : { items: [] },
     tag : "london"
 };
 

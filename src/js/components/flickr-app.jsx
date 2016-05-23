@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Store from "../store/flickr-store";
 import { getFlickrImages } from "../actions/flickr-api-actions";
 import Title from "./title";
+import FlickrImages from "./flickr-images";
 
 export default class FlickrApp extends Component {
 
@@ -29,9 +30,12 @@ export default class FlickrApp extends Component {
     }
 
     render() {
-        return(
-            <Title title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
-        );
+        return (
+            <div>
+                <Title title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
+                <FlickrImages flickrData={ this.state.flickrData } />
+            </div>
+        )
     }
 
 }

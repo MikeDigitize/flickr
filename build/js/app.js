@@ -20359,6 +20359,10 @@
 
 	var _title2 = _interopRequireDefault(_title);
 
+	var _flickrImages = __webpack_require__(194);
+
+	var _flickrImages2 = _interopRequireDefault(_flickrImages);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20411,7 +20415,12 @@
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            return _react2.default.createElement(_title2.default, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title });
+	            return _react2.default.createElement(
+	                "div",
+	                null,
+	                _react2.default.createElement(_title2.default, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
+	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData })
+	            );
 	        }
 	    }]);
 
@@ -21339,7 +21348,7 @@
 
 	var initialState = {
 	    loading: true,
-	    flickrData: {},
+	    flickrData: { items: [] },
 	    tag: "london"
 	};
 
@@ -22467,7 +22476,7 @@
 	    props.title
 	  );
 	};
-	exports.default = (0, _bootstrapWrapper2.default)(Title, "col-sm-12");
+	exports.default = (0, _bootstrapWrapper2.default)(Title, 12, "sm");
 
 /***/ },
 /* 193 */
@@ -22493,36 +22502,194 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var BootstrapWrapper = function BootstrapWrapper(ComposedComponent, columns) {
+	/**
+	 * BootstrapWrapper() returns a React component that wraps component functions / classes in Bootstrap rows and columns
+	 *
+	 * It's not too smart so define columns in numbers divisible by 12 (the amount of Bootstrap columns in its grid)
+	 *
+	 * Example usage:
+	 * let heading = props => <h1>{ props.greet } this is a simple stateless component</h1>;
+	 * let Wrapped = BootstrapWrapper(heading, 12, "sm");
+	 * <Wrapped greet="Hi"/>
+	 *
+	 * Outputs: <section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section>
+	 *
+	 * @param { Array of or single Function or Class } WrappedComponents
+	 * @param { Number } columns
+	 * @param { String } size
+	 * @param { Array (optional) } propsToAssign
+	 * @return { React Component }
+	 *
+	 */
+
+	var BootstrapWrapper = function BootstrapWrapper(WrappedComponents, columns, size) {
+	    var propsToAssign = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
 	    return function (_Component) {
-	        _inherits(_class, _Component);
+	        _inherits(Wrapper, _Component);
 
-	        function _class() {
-	            _classCallCheck(this, _class);
+	        function Wrapper() {
+	            _classCallCheck(this, Wrapper);
 
-	            return _possibleConstructorReturn(this, Object.getPrototypeOf(_class).apply(this, arguments));
+	            return _possibleConstructorReturn(this, Object.getPrototypeOf(Wrapper).apply(this, arguments));
 	        }
 
-	        _createClass(_class, [{
+	        _createClass(Wrapper, [{
 	            key: "render",
 	            value: function render() {
+	                var _this2 = this;
+
+	                if (!Array.isArray(WrappedComponents)) {
+	                    WrappedComponents = [WrappedComponents];
+	                }
+	                if (!Object.keys(this.props).length) {
+	                    this.props = propsToAssign;
+	                }
+	                var rowsOfComponents = Wrapper.createRowsOfComponents();
+	                return _react2.default.createElement(
+	                    "div",
+	                    null,
+	                    rowsOfComponents.map(function (component, rowIndex) {
+	                        return Wrapper.createRows(component, rowIndex, _this2.props);
+	                    })
+	                );
+	            }
+	        }], [{
+	            key: "createRowsOfComponents",
+	            value: function createRowsOfComponents() {
+	                var rows = [];
+	                var start = 0;
+	                var amount = 12 / columns;
+	                var end = amount;
+
+	                while (start < WrappedComponents.length) {
+	                    rows.push(WrappedComponents.slice(start, end));
+	                    start += amount;
+	                    end += amount;
+	                }
+	                return rows;
+	            }
+	        }, {
+	            key: "createRows",
+	            value: function createRows(components, rowIndex, props) {
+	                rowIndex = rowIndex * 12 / columns;
 	                return _react2.default.createElement(
 	                    "section",
 	                    { className: "row" },
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: columns },
-	                        _react2.default.createElement(ComposedComponent, this.props)
-	                    )
+	                    components.map(function (component, componentIndex) {
+	                        var componentProps = Array.isArray(props) ? props[componentIndex + rowIndex] : props;
+	                        return Wrapper.createColumns(component, componentProps, componentIndex + rowIndex);
+	                    })
+	                );
+	            }
+	        }, {
+	            key: "createColumns",
+	            value: function createColumns(Component, props, index) {
+	                return _react2.default.createElement(
+	                    "div",
+	                    { className: "col-" + size + "-" + columns, key: index },
+	                    _react2.default.createElement(Component, props)
 	                );
 	            }
 	        }]);
 
-	        return _class;
+	        return Wrapper;
 	    }(_react.Component);
 	};
 
 	exports.default = BootstrapWrapper;
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _flickrImage = __webpack_require__(195);
+
+	var _flickrImage2 = _interopRequireDefault(_flickrImage);
+
+	var _bootstrapWrapper = __webpack_require__(193);
+
+	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FlickrImages = function (_Component) {
+	    _inherits(FlickrImages, _Component);
+
+	    function FlickrImages() {
+	        _classCallCheck(this, FlickrImages);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImages).apply(this, arguments));
+	    }
+
+	    _createClass(FlickrImages, [{
+	        key: "createImages",
+	        value: function createImages() {
+	            var props = this.props.flickrData.items.map(function (data, i) {
+	                return { key: i, src: data.media.m, link: data.link };
+	            });
+	            var images = this.props.flickrData.items.map(function () {
+	                return _flickrImage2.default;
+	            });
+	            return (0, _bootstrapWrapper2.default)(images, 3, "md", props);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            if (!this.props.flickrData.items.length) {
+	                return false;
+	            }
+	            var Images = this.createImages();
+	            return _react2.default.createElement(Images, null);
+	        }
+	    }]);
+
+	    return FlickrImages;
+	}(_react.Component);
+
+	exports.default = FlickrImages;
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var FlickrImage = function FlickrImage(props) {
+	  return _react2.default.createElement(
+	    "a",
+	    { href: props.link },
+	    _react2.default.createElement("img", { className: "flickr-img", src: props.src })
+	  );
+	};
+	exports.default = FlickrImage;
 
 /***/ }
 /******/ ]);
