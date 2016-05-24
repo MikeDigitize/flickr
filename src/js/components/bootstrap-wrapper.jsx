@@ -16,7 +16,7 @@ import React, { Component } from "react";
  * @param { Number } columns
  * @param { String } size
  * @param { Array (optional) } propsToAssign
- * @return { React Component }
+ * @return { Function } (React Component)
  *
  */
 
@@ -32,6 +32,9 @@ const BootstrapWrapper = (WrappedComponents, columns, size, propsToAssign = []) 
             rows.push(WrappedComponents.slice(start, end));
             start += amount;
             end += amount;
+            if(end > WrappedComponents.length) {
+                end = WrappedComponents.length;
+            }
         }
         return rows;
     }

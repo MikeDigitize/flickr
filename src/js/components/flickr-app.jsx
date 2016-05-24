@@ -3,6 +3,7 @@ import Store from "../store/flickr-store";
 import { getFlickrImages } from "../actions/flickr-api-actions";
 import Title from "./title";
 import FlickrImages from "./flickr-images";
+import BootstrapWrapper from "./bootstrap-wrapper";
 
 export default class FlickrApp extends Component {
 

@@ -20363,6 +20363,10 @@
 
 	var _flickrImages2 = _interopRequireDefault(_flickrImages);
 
+	var _bootstrapWrapper = __webpack_require__(193);
+
+	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21458,7 +21462,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22518,7 +22522,7 @@
 	 * @param { Number } columns
 	 * @param { String } size
 	 * @param { Array (optional) } propsToAssign
-	 * @return { React Component }
+	 * @return { Function } (React Component)
 	 *
 	 */
 
@@ -22565,6 +22569,9 @@
 	                    rows.push(WrappedComponents.slice(start, end));
 	                    start += amount;
 	                    end += amount;
+	                    if (end > WrappedComponents.length) {
+	                        end = WrappedComponents.length;
+	                    }
 	                }
 	                return rows;
 	            }
