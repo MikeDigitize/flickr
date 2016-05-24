@@ -1,4 +1,13 @@
-import React from "react";
+import React, { Component } from "react";
 
-const FlickrImage = props => <a href={ props.link }><img className="flickr-img" src={ props.src } /></a>;
-export default FlickrImage;
+// author, date_taken, description, link, published
+
+export default class FlickrImage extends Component {
+    render() {
+        return(
+            <div className="flickr-img-holder">
+                <img className="flickr-img" src={ this.props.src } />
+            </div>
+        );
+    }
+}

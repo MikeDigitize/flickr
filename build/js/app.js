@@ -20359,7 +20359,7 @@
 
 	var _title2 = _interopRequireDefault(_title);
 
-	var _flickrImages = __webpack_require__(194);
+	var _flickrImages = __webpack_require__(195);
 
 	var _flickrImages2 = _interopRequireDefault(_flickrImages);
 
@@ -20419,10 +20419,11 @@
 	    }, {
 	        key: "render",
 	        value: function render() {
+	            var FlickrTitle = (0, _bootstrapWrapper2.default)(_title2.default, 12, "sm");
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                _react2.default.createElement(_title2.default, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
+	                _react2.default.createElement(FlickrTitle, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
 	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData })
 	            );
 	        }
@@ -22480,7 +22481,7 @@
 	    props.title
 	  );
 	};
-	exports.default = (0, _bootstrapWrapper2.default)(Title, 12, "sm");
+	exports.default = Title;
 
 /***/ },
 /* 193 */
@@ -22497,6 +22498,10 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _general = __webpack_require__(194);
+
+	__webpack_require__(185);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22581,7 +22586,7 @@
 	                rowIndex = rowIndex * 12 / columns;
 	                return _react2.default.createElement(
 	                    "section",
-	                    { className: "row" },
+	                    { className: "row", key: (0, _general.createReactKey)() + rowIndex },
 	                    components.map(function (component, componentIndex) {
 	                        var componentProps = Array.isArray(props) ? props[componentIndex + rowIndex] : props;
 	                        return Wrapper.createColumns(component, componentProps, componentIndex + rowIndex);
@@ -22593,7 +22598,7 @@
 	            value: function createColumns(Component, props, index) {
 	                return _react2.default.createElement(
 	                    "div",
-	                    { className: "col-" + size + "-" + columns, key: index },
+	                    { className: "col-" + size + "-" + columns, key: (0, _general.createReactKey)() + index },
 	                    _react2.default.createElement(Component, props)
 	                );
 	            }
@@ -22607,6 +22612,20 @@
 
 /***/ },
 /* 194 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.createReactKey = createReactKey;
+	function createReactKey() {
+	    return Math.random().toString(16).substr(2, 9);
+	}
+
+/***/ },
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22621,7 +22640,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _flickrImage = __webpack_require__(195);
+	var _flickrImage = __webpack_require__(196);
 
 	var _flickrImage2 = _interopRequireDefault(_flickrImage);
 
@@ -22674,14 +22693,16 @@
 	exports.default = FlickrImages;
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
 
@@ -22689,13 +22710,37 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var FlickrImage = function FlickrImage(props) {
-	  return _react2.default.createElement(
-	    "a",
-	    { href: props.link },
-	    _react2.default.createElement("img", { className: "flickr-img", src: props.src })
-	  );
-	};
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// author, date_taken, description, link, published
+
+	var FlickrImage = function (_Component) {
+	    _inherits(FlickrImage, _Component);
+
+	    function FlickrImage() {
+	        _classCallCheck(this, FlickrImage);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImage).apply(this, arguments));
+	    }
+
+	    _createClass(FlickrImage, [{
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "flickr-img-holder" },
+	                _react2.default.createElement("img", { className: "flickr-img", src: this.props.src })
+	            );
+	        }
+	    }]);
+
+	    return FlickrImage;
+	}(_react.Component);
+
 	exports.default = FlickrImage;
 
 /***/ }

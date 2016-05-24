@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { createReactKey } from "../utils/general";
+import "../utils/object-assign-polyfill";
 
 /**
  * BootstrapWrapper() returns a React component that wraps component functions / classes in Bootstrap rows and columns
@@ -42,7 +44,7 @@ const BootstrapWrapper = (WrappedComponents, columns, size, propsToAssign = []) 
     static createRows(components, rowIndex, props) {
         rowIndex = rowIndex * 12 / columns;
         return (
-            <section className="row">
+            <section className="row" key={ createReactKey() + rowIndex }>
                 {
                     components.map((component, componentIndex) => {
                         let componentProps = Array.isArray(props) ? props[componentIndex + rowIndex] : props;
@@ -55,7 +57,7 @@ const BootstrapWrapper = (WrappedComponents, columns, size, propsToAssign = []) 
 
     static createColumns (Component, props, index) {
         return (
-            <div className={ `col-${size}-${columns}` } key={ index }>
+            <div className={ `col-${size}-${columns}` } key={ createReactKey() + index }>
                 <Component {...props} />
             </div>
         );

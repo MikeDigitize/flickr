@@ -1,6 +1,7 @@
-var path = require("path");
+import "babel-core/register";
+import path from "path";
 
-module.exports = function(config) {
+module.exports = config =>
     config.set({
 
         basePath: "",
@@ -79,4 +80,3 @@ module.exports = function(config) {
 
     });
 
-};
