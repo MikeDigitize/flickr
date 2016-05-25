@@ -3,9 +3,13 @@ import FlickrImage from "./flickr-image";
 import BootstrapWrapper from "./bootstrap-wrapper";
 
 export default class FlickrImages extends Component {
+
     createImages() {
         let props = this.props.flickrData.items.map((data, i) => {
-            return { key : i, src: data.media.m, link: data.link };
+            return {
+                src: data.media.m,
+                link: data.link
+            };
         });
         let images = this.props.flickrData.items.map(() => FlickrImage);
         return BootstrapWrapper(images, 3, "md", props);

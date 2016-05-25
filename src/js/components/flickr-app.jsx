@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Store from "../store/flickr-store";
-import { getFlickrImages } from "../actions/flickr-api-actions";
+import { getFlickrImages } from "../actions/flickr-actions";
 import Title from "./title";
 import FlickrImages from "./flickr-images";
 import BootstrapWrapper from "./bootstrap-wrapper";
@@ -13,9 +13,9 @@ export default class FlickrApp extends Component {
         this.state = {
             loading,
             flickrData,
-            tag
+            tag,
+            unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this))
         };
-        Store.subscribe(this.onStoreUpdate.bind(this));
     }
 
     componentDidMount() {
@@ -27,6 +27,8 @@ export default class FlickrApp extends Component {
         this.setState({
             loading,
             flickrData
+        }, () => {
+            this.state.unsubscribe();
         });
     }
 
@@ -35,7 +37,7 @@ export default class FlickrApp extends Component {
         return (
             <div>
                 <FlickrTitle title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
-                <FlickrImages flickrData={ this.state.flickrData } />
+                <FlickrImages flickrData={ this.state.flickrData } onImageClick={ this.onImageClick } />
             </div>
         )
     }

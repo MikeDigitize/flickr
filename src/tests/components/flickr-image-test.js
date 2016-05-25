@@ -12,8 +12,7 @@ describe("FlickrImage component test", function() {
     renderer.render(image);
 
     it("Should render with text content passed in as props", function() {
-        let renderedImageHolder = renderer.getRenderOutput();
-        let renderedImage = renderedImageHolder.props.children;
+        let renderedImage = renderer.getRenderOutput();
         expect(renderedImage.type).to.equal("img");
         expect(renderedImage.props.className).to.equal(expectedClass);
         expect(renderedImage.props.src).to.equal(src);

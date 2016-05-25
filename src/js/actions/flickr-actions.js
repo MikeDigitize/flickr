@@ -13,3 +13,8 @@ export const DATALOADED = "DATALOADED";
 export function dataLoaded(data) {
     return { data, type : DATALOADED }
 }
+
+export const IMAGECLICKED = "IMAGECLICKED";
+export function imageSelected(data) {
+    return { data, type : IMAGECLICKED }
+}
