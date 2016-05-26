@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { createReactKey } from "../utils/general";
-import "../utils/object-assign-polyfill";
 
 /**
  * BootstrapWrapper() returns a React component that wraps component functions / classes in Bootstrap rows and columns
@@ -12,7 +11,7 @@ import "../utils/object-assign-polyfill";
  * let Wrapped = BootstrapWrapper(heading, 12, "sm");
  * <Wrapped greet="Hi"/>
  *
- * Outputs: <section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section>
+ * Outputs: <div><section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section></div>
  *
  * @param { Array of or single Function or Class } WrappedComponents
  * @param { Number } columns
@@ -75,6 +74,7 @@ const BootstrapWrapper = (WrappedComponents, columns, size, propsToAssign = []) 
             <div>{ rowsOfComponents.map((component, rowIndex) => Wrapper.createRows(component, rowIndex, this.props)) }</div>
         );
     }
+
 };
 
 export default BootstrapWrapper;

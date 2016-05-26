@@ -3,10 +3,19 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: capitalize;
 }
 
-.flickr-img {
-  width: 100%;
+.flickr-img-holder {
+  height: 300px;
+  padding: 10px;
+
+  .flickr-img {
+    border: 6px transparent solid;
+    position: relative;
+    display: block;
+    margin: auto;
+    cursor: pointer;
+  }
 }
 
-.selected {
+.flickr-img.selected {
   border: 6px dotted indianred;
 }

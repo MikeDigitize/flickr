@@ -20359,11 +20359,11 @@
 
 	var _title2 = _interopRequireDefault(_title);
 
-	var _flickrImages = __webpack_require__(195);
+	var _flickrImages = __webpack_require__(194);
 
 	var _flickrImages2 = _interopRequireDefault(_flickrImages);
 
-	var _bootstrapWrapper = __webpack_require__(194);
+	var _bootstrapWrapper = __webpack_require__(196);
 
 	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
@@ -21432,10 +21432,21 @@
 
 	var _getFlickrJson = __webpack_require__(187);
 
+	var _general = __webpack_require__(192);
+
+	__webpack_require__(185);
+
 	var RETRIEVEDATA = exports.RETRIEVEDATA = "RETRIEVEDATA";
 	function getFlickrImages(tag) {
+	    var flickrData = void 0;
 	    return function (dispatch) {
 	        (0, _getFlickrJson.getFlickrJson)(tag).then(function (data) {
+	            flickrData = data;
+	            return (0, _general.loadImages)(data.items);
+	        }).then(function (images) {
+	            var data = Object.assign({}, flickrData, {
+	                items: (0, _general.filterImages)(images, flickrData.items)
+	            });
 	            dispatch(dataLoaded(data));
 	        });
 	    };
@@ -22485,6 +22496,12 @@
 	exports.createReactKey = createReactKey;
 	exports.removeSelected = removeSelected;
 	exports.containsSelected = containsSelected;
+	exports.addEventListener = addEventListener;
+	exports.removeEventListener = removeEventListener;
+	exports.loadImage = loadImage;
+	exports.loadImages = loadImages;
+	exports.filterImageHeight = filterImageHeight;
+	exports.filterImages = filterImages;
 	function createReactKey() {
 	    return Math.random().toString(16).substr(2, 9);
 	}
@@ -22497,6 +22514,58 @@
 
 	function containsSelected(selected, src) {
 	    return ~selected.indexOf(src);
+	}
+
+	function addEventListener(el, fn) {
+	    el.addEventListener("load", fn);
+	}
+
+	function removeEventListener(el, fn) {
+	    el.addEventListener("load", fn);
+	}
+
+	function loadImage(src) {
+
+	    return new Promise(function (resolve) {
+
+	        function onLoad() {
+	            removeEventListener(this, onLoad);
+	            var width = this.width;
+	            var height = this.height;
+	            var src = this.src;
+
+	            resolve({ width: width, height: height, src: src });
+	        }
+
+	        var image = new Image();
+	        addEventListener(image, onLoad);
+	        image.src = src;
+	    });
+	}
+
+	function loadImages(images) {
+	    var load = images.map(function (img) {
+	        return loadImage(img.media.m);
+	    });
+	    return Promise.all(load);
+	}
+
+	function filterImageHeight(images) {
+	    return images.filter(function (img) {
+	        return img.height <= 300;
+	    });
+	}
+
+	function filterImages(images, flickrData) {
+	    var imagesToDisplay = filterImageHeight(images);
+	    return flickrData.map(function (data) {
+	        var match = imagesToDisplay.filter(function (img) {
+	            return img.src === data.media.m;
+	        }).pop();
+	        data.media.width = match.width;
+	        data.media.height = match.height;
+	        return data;
+	    });
 	}
 
 /***/ },
@@ -22512,10 +22581,6 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
-
-	var _bootstrapWrapper = __webpack_require__(194);
-
-	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22544,9 +22609,221 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _flickrImage = __webpack_require__(195);
+
+	var _flickrImage2 = _interopRequireDefault(_flickrImage);
+
+	var _bootstrapWrapper = __webpack_require__(196);
+
+	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FlickrImages = function (_Component) {
+	    _inherits(FlickrImages, _Component);
+
+	    function FlickrImages() {
+	        _classCallCheck(this, FlickrImages);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImages).apply(this, arguments));
+	    }
+
+	    _createClass(FlickrImages, [{
+	        key: "createImages",
+	        value: function createImages() {
+	            var props = this.props.flickrData.items.map(function (data, i) {
+	                var author = data.author;
+	                var date_taken = data.date_taken;
+	                var description = data.description;
+	                var link = data.link;
+	                var published = data.published;
+	                var _data$media = data.media;
+	                var width = _data$media.width;
+	                var height = _data$media.height;
+	                var m = _data$media.m;
+
+	                return {
+	                    author: author,
+	                    date_taken: date_taken,
+	                    description: description,
+	                    link: link,
+	                    published: published,
+	                    width: width,
+	                    height: height,
+	                    src: m
+	                };
+	            });
+	            var images = this.props.flickrData.items.map(function () {
+	                return _flickrImage2.default;
+	            });
+	            return (0, _bootstrapWrapper2.default)(images, 3, "md", props);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            if (!this.props.flickrData.items.length) {
+	                return false;
+	            }
+	            var Images = this.createImages();
+	            return _react2.default.createElement(Images, null);
+	        }
+	    }]);
+
+	    return FlickrImages;
+	}(_react.Component);
+
+	exports.default = FlickrImages;
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _flickrStore = __webpack_require__(169);
+
+	var _flickrStore2 = _interopRequireDefault(_flickrStore);
+
+	var _flickrActions = __webpack_require__(186);
+
 	var _general = __webpack_require__(192);
 
-	__webpack_require__(185);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FlickrImage = function (_Component) {
+	    _inherits(FlickrImage, _Component);
+
+	    function FlickrImage(props) {
+	        _classCallCheck(this, FlickrImage);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImage).call(this));
+
+	        var src = props.src;
+	        var author = props.author;
+	        var date_taken = props.date_taken;
+	        var link = props.link;
+	        var published = props.published;
+	        var width = props.width;
+	        var height = props.height;
+
+	        _this.state = {
+	            src: src,
+	            author: author,
+	            date_taken: date_taken,
+	            link: link,
+	            published: published,
+	            width: width,
+	            height: height,
+	            isSelected: false
+	        };
+	        _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this));
+	        return _this;
+	    }
+
+	    _createClass(FlickrImage, [{
+	        key: "onStoreUpdate",
+	        value: function onStoreUpdate() {
+	            var selected = _flickrStore2.default.getState().flickr.selected;
+
+	            var isSelected = (0, _general.containsSelected)(selected, this.state.src);
+	            this.setState({
+	                isSelected: isSelected
+	            });
+	        }
+	    }, {
+	        key: "calculateDimensions",
+	        value: function calculateDimensions() {
+	            return {
+	                width: this.state.width + "px",
+	                top: (300 - this.state.height) / 2 + "px"
+	            };
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
+	            console.log(this.state.height, this.state.width);
+	            return _react2.default.createElement(
+	                "div",
+	                null,
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "flickr-img-holder" },
+	                    _react2.default.createElement("img", { className: imageClass, style: this.calculateDimensions(), src: this.state.src, onClick: FlickrImage.onImageClick })
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "flickr-img-data" },
+	                    _react2.default.createElement(
+	                        "p",
+	                        null,
+	                        this.state.date_taken
+	                    ),
+	                    _react2.default.createElement(
+	                        "p",
+	                        null,
+	                        this.state.author
+	                    ),
+	                    _react2.default.createElement(
+	                        "p",
+	                        null,
+	                        this.state.published
+	                    )
+	                )
+	            );
+	        }
+	    }], [{
+	        key: "onImageClick",
+	        value: function onImageClick(evt) {
+	            var target = evt.target || evt.srcElement;
+	            _flickrStore2.default.dispatch((0, _flickrActions.imageSelected)(target.src));
+	        }
+	    }]);
+
+	    return FlickrImage;
+	}(_react.Component);
+
+	exports.default = FlickrImage;
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _general = __webpack_require__(192);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22566,7 +22843,7 @@
 	 * let Wrapped = BootstrapWrapper(heading, 12, "sm");
 	 * <Wrapped greet="Hi"/>
 	 *
-	 * Outputs: <section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section>
+	 * Outputs: <div><section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section></div>
 	 *
 	 * @param { Array of or single Function or Class } WrappedComponents
 	 * @param { Number } columns
@@ -22654,158 +22931,6 @@
 	};
 
 	exports.default = BootstrapWrapper;
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _flickrImage = __webpack_require__(196);
-
-	var _flickrImage2 = _interopRequireDefault(_flickrImage);
-
-	var _bootstrapWrapper = __webpack_require__(194);
-
-	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var FlickrImages = function (_Component) {
-	    _inherits(FlickrImages, _Component);
-
-	    function FlickrImages() {
-	        _classCallCheck(this, FlickrImages);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImages).apply(this, arguments));
-	    }
-
-	    _createClass(FlickrImages, [{
-	        key: "createImages",
-	        value: function createImages() {
-	            var props = this.props.flickrData.items.map(function (data, i) {
-	                return {
-	                    src: data.media.m,
-	                    link: data.link
-	                };
-	            });
-	            var images = this.props.flickrData.items.map(function () {
-	                return _flickrImage2.default;
-	            });
-	            return (0, _bootstrapWrapper2.default)(images, 3, "md", props);
-	        }
-	    }, {
-	        key: "render",
-	        value: function render() {
-	            if (!this.props.flickrData.items.length) {
-	                return false;
-	            }
-	            var Images = this.createImages();
-	            return _react2.default.createElement(Images, null);
-	        }
-	    }]);
-
-	    return FlickrImages;
-	}(_react.Component);
-
-	exports.default = FlickrImages;
-
-/***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _flickrStore = __webpack_require__(169);
-
-	var _flickrStore2 = _interopRequireDefault(_flickrStore);
-
-	var _flickrActions = __webpack_require__(186);
-
-	var _general = __webpack_require__(192);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	// author, date_taken, description, link, published
-
-	var FlickrImage = function (_Component) {
-	    _inherits(FlickrImage, _Component);
-
-	    function FlickrImage(props) {
-	        _classCallCheck(this, FlickrImage);
-
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImage).call(this));
-
-	        var src = props.src;
-
-	        _this.state = {
-	            src: src,
-	            isSelected: false
-	        };
-	        _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this));
-	        return _this;
-	    }
-
-	    _createClass(FlickrImage, [{
-	        key: "onStoreUpdate",
-	        value: function onStoreUpdate() {
-	            var selected = _flickrStore2.default.getState().flickr.selected;
-
-	            var isSelected = (0, _general.containsSelected)(selected, this.state.src);
-	            this.setState({
-	                isSelected: isSelected
-	            });
-	        }
-	    }, {
-	        key: "render",
-	        value: function render() {
-	            var imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
-	            return _react2.default.createElement("img", { className: imageClass, src: this.state.src, onClick: FlickrImage.onImageClick });
-	        }
-	    }], [{
-	        key: "onImageClick",
-	        value: function onImageClick(evt) {
-	            var target = evt.target || evt.srcElement;
-	            _flickrStore2.default.dispatch((0, _flickrActions.imageSelected)(target.src));
-	        }
-	    }]);
-
-	    return FlickrImage;
-	}(_react.Component);
-
-	exports.default = FlickrImage;
 
 /***/ }
 /******/ ]);

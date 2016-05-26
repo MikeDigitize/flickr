@@ -3,15 +3,19 @@ import Store from "../store/flickr-store";
 import { imageSelected } from "../actions/flickr-actions";
 import { containsSelected } from "../utils/general";
 
-// author, date_taken, description, link, published
-
 export default class FlickrImage extends Component {
 
     constructor(props) {
         super();
-        let { src } = props;
+        let { src, author, date_taken, link, published, width, height } = props;
         this.state = {
             src,
+            author,
+            date_taken,
+            link,
+            published,
+            width,
+            height,
             isSelected : false
         };
         Store.subscribe(this.onStoreUpdate.bind(this));
@@ -25,6 +29,13 @@ export default class FlickrImage extends Component {
         });
     }
 
+    calculateDimensions() {
+        return {
+            width : `${this.state.width}px`,
+            top : `${((300 - this.state.height) / 2)}px`
+        }
+    }
+
     static onImageClick(evt) {
         let target = evt.target || evt.srcElement;
         Store.dispatch(imageSelected(target.src));
@@ -32,8 +43,18 @@ export default class FlickrImage extends Component {
 
     render() {
         let imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
+        console.log(this.state.height, this.state.width);
         return(
-            <img className={ imageClass } src={ this.state.src } onClick={ FlickrImage.onImageClick }/>
+            <div>
+                <div className="flickr-img-holder">
+                    <img className={ imageClass } style={ this.calculateDimensions() } src={ this.state.src } onClick={ FlickrImage.onImageClick } />
+                </div>
+                <div className="flickr-img-data">
+                    <p>{ this.state.date_taken }</p>
+                    <p>{ this.state.author }</p>
+                    <p>{ this.state.published }</p>
+                </div>
+            </div>
         );
     }
 }
