@@ -20397,7 +20397,6 @@
 	            tag: tag,
 	            unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this))
 	        };
-	        (0, _general.getColumnInfo)("col-xs-12, col-lg-3 col-xl-offset-5 col-xl-2, col-xs-3, col-sm-6, col-xs-9 col-xs-1");
 	        return _this;
 	    }
 
@@ -20426,7 +20425,7 @@
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            var FlickrTitle = (0, _bootstrapWrapper2.default)(_title2.default, 12, "sm");
+	            var FlickrTitle = (0, _bootstrapWrapper2.default)(_title2.default, "col-sm-12");
 	            return _react2.default.createElement(
 	                "div",
 	                null,
@@ -21496,7 +21495,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22499,17 +22498,12 @@
 	exports.createReactKey = createReactKey;
 	exports.removeSelected = removeSelected;
 	exports.containsSelected = containsSelected;
-	exports.addEventListener = addEventListener;
-	exports.removeEventListener = removeEventListener;
+	exports.addLoadListener = addLoadListener;
+	exports.removeLoadListener = removeLoadListener;
 	exports.loadImage = loadImage;
 	exports.loadImages = loadImages;
 	exports.filterImageHeight = filterImageHeight;
 	exports.filterImages = filterImages;
-	exports.getColumnSizes = getColumnSizes;
-	exports.sortByColumnSize = sortByColumnSize;
-	exports.removeOffsetClass = removeOffsetClass;
-	exports.sortLowestToHighest = sortLowestToHighest;
-	exports.getColumnInfo = getColumnInfo;
 	function createReactKey() {
 	    return Math.random().toString(16).substr(2, 9);
 	}
@@ -22524,12 +22518,12 @@
 	    return ~selected.indexOf(src);
 	}
 
-	function addEventListener(el, fn) {
+	function addLoadListener(el, fn) {
 	    el.addEventListener("load", fn);
 	}
 
-	function removeEventListener(el, fn) {
-	    el.addEventListener("load", fn);
+	function removeLoadListener(el, fn) {
+	    el.removeEventListener("load", fn);
 	}
 
 	function loadImage(src) {
@@ -22537,7 +22531,7 @@
 	    return new Promise(function (resolve) {
 
 	        function onLoad() {
-	            removeEventListener(this, onLoad);
+	            removeLoadListener(this, onLoad);
 	            var width = this.width;
 	            var height = this.height;
 	            var src = this.src;
@@ -22546,7 +22540,7 @@
 	        }
 
 	        var image = new Image();
-	        addEventListener(image, onLoad);
+	        addLoadListener(image, onLoad);
 	        image.src = src;
 	    });
 	}
@@ -22574,63 +22568,6 @@
 	        data.media.height = match.height;
 	        return data;
 	    });
-	}
-
-	function getColumnSizes(bootstrapClass) {
-	    return bootstrapClass.match(/xs-(\w+-)?\d+|sm-(\w+-)?\d+|md-(\w+-)?\d+|lg-(\w+-)?\d+|xl-(\w+-)?\d+/gi) || [];
-	}
-
-	function sortByColumnSize(bootstrapClasses) {
-
-	    var xs = bootstrapClasses.filter(function (cls) {
-	        return cls[0] === "xs";
-	    }).sort(function (a, b) {
-	        return sortLowestToHighest(a, b);
-	    });
-	    var sm = bootstrapClasses.filter(function (cls) {
-	        return cls[0] === "sm";
-	    }).sort(function (a, b) {
-	        return sortLowestToHighest(a, b);
-	    });
-	    var md = bootstrapClasses.filter(function (cls) {
-	        return cls[0] === "md";
-	    }).sort(function (a, b) {
-	        return sortLowestToHighest(a, b);
-	    });
-	    var lg = bootstrapClasses.filter(function (cls) {
-	        return cls[0] === "lg";
-	    }).sort(function (a, b) {
-	        return sortLowestToHighest(a, b);
-	    });
-	    var xl = bootstrapClasses.filter(function (cls) {
-	        return cls[0] === "xl";
-	    }).sort(function (a, b) {
-	        return sortLowestToHighest(a, b);
-	    });
-
-	    return [].concat(xs, sm, md, lg, xl).pop();
-	}
-
-	function removeOffsetClass(bootstrapClasses) {
-	    return bootstrapClasses.map(function (cls) {
-	        return cls.replace("offset", "").split("-");
-	    }).map(function (cls) {
-	        return cls.filter(function (cls) {
-	            return cls;
-	        });
-	    });
-	}
-
-	function sortLowestToHighest(a, b) {
-	    return Number(a[1]) - Number(b[1]);
-	}
-
-	function getColumnInfo(bootstrapClass) {
-	    var bootstrapClasses = getColumnSizes(bootstrapClass);
-	    var classes = removeOffsetClass(bootstrapClasses);
-	    console.log("result", sortByColumnSize(classes), bootstrapClasses.map(function (cls) {
-	        return "col-" + cls;
-	    }));
 	}
 
 /***/ },
@@ -22727,7 +22664,7 @@
 	            var images = this.props.flickrData.items.map(function () {
 	                return _flickrImage2.default;
 	            });
-	            return (0, _bootstrapWrapper2.default)(images, 3, "sm", props);
+	            return (0, _bootstrapWrapper2.default)(images, "col-sm-4 col-md-4 col-lg-3", props);
 	        }
 	    }, {
 	        key: "render",
@@ -22900,25 +22837,24 @@
 	/**
 	 * BootstrapWrapper() returns a React component that wraps component functions / classes in Bootstrap rows and columns
 	 *
-	 * It's not too smart so define columns in numbers divisible by 12 (the amount of Bootstrap columns in its grid)
+	 * It's not too smart so define column classes in numbers divisible by 12 e.g. col-sm-2,3,4,6 (the amount of Bootstrap columns in its grid)
 	 *
 	 * Example usage:
 	 * let heading = props => <h1>{ props.greet } this is a simple stateless component</h1>;
-	 * let Wrapped = BootstrapWrapper(heading, 12, "sm");
+	 * let Wrapped = BootstrapWrapper(heading, "col-sm-3 col-md-4");
 	 * <Wrapped greet="Hi"/>
 	 *
-	 * Outputs: <div><section class="row"><div class="col-sm-12"><h1>Hello his is a simple stateless component</h1></div></section></div>
+	 * Outputs: <div><section class="row"><div class="col-sm-3 col-md-4"><h1>Hello his is a simple stateless component</h1></div></section></div>
 	 *
 	 * @param { Array of or single Function or Class } WrappedComponents
-	 * @param { Number } columns
-	 * @param { String } size
+	 * @param { String } bootstrapClass
 	 * @param { Array (optional) } propsToAssign
 	 * @return { Function } (React Component)
 	 *
 	 */
 
-	var BootstrapWrapper = function BootstrapWrapper(WrappedComponents, columns, size) {
-	    var propsToAssign = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
+	var BootstrapWrapper = function BootstrapWrapper(WrappedComponents, bootstrapClass) {
+	    var propsToAssign = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
 	    return function (_Component) {
 	        _inherits(Wrapper, _Component);
 
@@ -22953,7 +22889,7 @@
 	            value: function createRowsOfComponents() {
 	                var rows = [];
 	                var start = 0;
-	                var amount = 12 / columns;
+	                var amount = 12 / Wrapper.getColumnCount(bootstrapClass);
 	                var end = amount;
 
 	                while (start < WrappedComponents.length) {
@@ -22967,9 +22903,69 @@
 	                return rows;
 	            }
 	        }, {
+	            key: "getColumnSizes",
+	            value: function getColumnSizes(bootstrapClass) {
+	                return bootstrapClass.match(/xs-(\w+-)?\d+|sm-(\w+-)?\d+|md-(\w+-)?\d+|lg-(\w+-)?\d+|xl-(\w+-)?\d+/gi) || [];
+	            }
+	        }, {
+	            key: "removeOffsetClass",
+	            value: function removeOffsetClass(bootstrapClasses) {
+	                return bootstrapClasses.map(function (cls) {
+	                    return cls.replace("offset", "").split("-");
+	                }).map(function (cls) {
+	                    return cls.filter(function (cls) {
+	                        return cls;
+	                    });
+	                });
+	            }
+	        }, {
+	            key: "sortLowestToHighest",
+	            value: function sortLowestToHighest(a, b) {
+	                return Number(a[1]) - Number(b[1]);
+	            }
+	        }, {
+	            key: "sortByColumnSize",
+	            value: function sortByColumnSize(bootstrapClasses) {
+
+	                var xs = bootstrapClasses.filter(function (cls) {
+	                    return cls[0] === "xs";
+	                }).sort(function (a, b) {
+	                    return Wrapper.sortLowestToHighest(a, b);
+	                });
+	                var sm = bootstrapClasses.filter(function (cls) {
+	                    return cls[0] === "sm";
+	                }).sort(function (a, b) {
+	                    return Wrapper.sortLowestToHighest(a, b);
+	                });
+	                var md = bootstrapClasses.filter(function (cls) {
+	                    return cls[0] === "md";
+	                }).sort(function (a, b) {
+	                    return Wrapper.sortLowestToHighest(a, b);
+	                });
+	                var lg = bootstrapClasses.filter(function (cls) {
+	                    return cls[0] === "lg";
+	                }).sort(function (a, b) {
+	                    return Wrapper.sortLowestToHighest(a, b);
+	                });
+	                var xl = bootstrapClasses.filter(function (cls) {
+	                    return cls[0] === "xl";
+	                }).sort(function (a, b) {
+	                    return Wrapper.sortLowestToHighest(a, b);
+	                });
+
+	                return [].concat(xs, sm, md, lg, xl).pop();
+	            }
+	        }, {
+	            key: "getColumnCount",
+	            value: function getColumnCount(bootstrapClass) {
+	                var bootstrapClasses = Wrapper.getColumnSizes(bootstrapClass);
+	                var classes = Wrapper.removeOffsetClass(bootstrapClasses);
+	                return Number(Wrapper.sortByColumnSize(classes)[1]);
+	            }
+	        }, {
 	            key: "createRows",
 	            value: function createRows(components, rowIndex, props) {
-	                rowIndex = rowIndex * 12 / columns;
+	                rowIndex = rowIndex * 12 / Wrapper.getColumnCount(bootstrapClass);
 	                return _react2.default.createElement(
 	                    "section",
 	                    { className: "row", key: (0, _general.createReactKey)() + rowIndex },
@@ -22984,7 +22980,7 @@
 	            value: function createColumns(Component, props, index) {
 	                return _react2.default.createElement(
 	                    "div",
-	                    { className: "col-" + size + "-" + columns, key: (0, _general.createReactKey)() + index },
+	                    { className: bootstrapClass, key: (0, _general.createReactKey)() + index },
 	                    _react2.default.createElement(Component, props)
 	                );
 	            }

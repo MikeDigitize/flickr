@@ -17,7 +17,6 @@ export default class FlickrApp extends Component {
             tag,
             unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this))
         };
-        getColumnInfo("col-xs-12, col-lg-3 col-xl-offset-5 col-xl-2, col-xs-3, col-sm-6, col-xs-9 col-xs-1");
     }
 
     componentDidMount() {
@@ -35,7 +34,7 @@ export default class FlickrApp extends Component {
     }
 
     render() {
-        let FlickrTitle = BootstrapWrapper(Title, 12, "sm");
+        let FlickrTitle = BootstrapWrapper(Title, "col-sm-12");
         return (
             <div>
                 <FlickrTitle title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />

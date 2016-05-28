@@ -20,7 +20,7 @@ export default class FlickrImages extends Component {
             };
         });
         let images = this.props.flickrData.items.map(() => FlickrImage);
-        return BootstrapWrapper(images, 3, "sm", props);
+        return BootstrapWrapper(images, "col-sm-4 col-md-4 col-lg-3", props);
     }
 
     render() {
