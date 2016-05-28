@@ -4,6 +4,7 @@ import sass from "gulp-sass";
 import autoprefixer from "gulp-autoprefixer";
 import minimise from "gulp-cssnano";
 import concat from "gulp-concat";
+import plumber from "gulp-plumber";
 
 import webpack from "webpack-stream";
 import { Server } from "karma";
@@ -28,15 +29,13 @@ let karmaServer = (configSrc, browsers, done) => new Server({
         singleRun: true,
         autoWatch: false,
         browsers: browsers
-    }, karmaExitStatus => {
+    }, () => {
         done();
-        if (karmaExitStatus) {
-            process.exit(1);
-        }
     }).start();
 
 gulp.task("js", () => {
     return gulp.src(jsSource)
+        .pipe(plumber())
         .pipe(webpack(require(webpackConfigSrc)))
         .pipe(gulp.dest(jsDest));
 });

@@ -43,7 +43,6 @@ export default class FlickrImage extends Component {
 
     render() {
         let imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
-        console.log(this.state.height, this.state.width);
         return(
             <div>
                 <div className="flickr-img-holder">

@@ -20367,6 +20367,8 @@
 
 	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
+	var _general = __webpack_require__(192);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20395,6 +20397,7 @@
 	            tag: tag,
 	            unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this))
 	        };
+	        (0, _general.getColumnInfo)("col-xs-12, col-lg-3 col-xl-offset-5 col-xl-2, col-xs-3, col-sm-6, col-xs-9 col-xs-1");
 	        return _this;
 	    }
 
@@ -22502,6 +22505,11 @@
 	exports.loadImages = loadImages;
 	exports.filterImageHeight = filterImageHeight;
 	exports.filterImages = filterImages;
+	exports.getColumnSizes = getColumnSizes;
+	exports.sortByColumnSize = sortByColumnSize;
+	exports.removeOffsetClass = removeOffsetClass;
+	exports.sortLowestToHighest = sortLowestToHighest;
+	exports.getColumnInfo = getColumnInfo;
 	function createReactKey() {
 	    return Math.random().toString(16).substr(2, 9);
 	}
@@ -22566,6 +22574,63 @@
 	        data.media.height = match.height;
 	        return data;
 	    });
+	}
+
+	function getColumnSizes(bootstrapClass) {
+	    return bootstrapClass.match(/xs-(\w+-)?\d+|sm-(\w+-)?\d+|md-(\w+-)?\d+|lg-(\w+-)?\d+|xl-(\w+-)?\d+/gi) || [];
+	}
+
+	function sortByColumnSize(bootstrapClasses) {
+
+	    var xs = bootstrapClasses.filter(function (cls) {
+	        return cls[0] === "xs";
+	    }).sort(function (a, b) {
+	        return sortLowestToHighest(a, b);
+	    });
+	    var sm = bootstrapClasses.filter(function (cls) {
+	        return cls[0] === "sm";
+	    }).sort(function (a, b) {
+	        return sortLowestToHighest(a, b);
+	    });
+	    var md = bootstrapClasses.filter(function (cls) {
+	        return cls[0] === "md";
+	    }).sort(function (a, b) {
+	        return sortLowestToHighest(a, b);
+	    });
+	    var lg = bootstrapClasses.filter(function (cls) {
+	        return cls[0] === "lg";
+	    }).sort(function (a, b) {
+	        return sortLowestToHighest(a, b);
+	    });
+	    var xl = bootstrapClasses.filter(function (cls) {
+	        return cls[0] === "xl";
+	    }).sort(function (a, b) {
+	        return sortLowestToHighest(a, b);
+	    });
+
+	    return [].concat(xs, sm, md, lg, xl).pop();
+	}
+
+	function removeOffsetClass(bootstrapClasses) {
+	    return bootstrapClasses.map(function (cls) {
+	        return cls.replace("offset", "").split("-");
+	    }).map(function (cls) {
+	        return cls.filter(function (cls) {
+	            return cls;
+	        });
+	    });
+	}
+
+	function sortLowestToHighest(a, b) {
+	    return Number(a[1]) - Number(b[1]);
+	}
+
+	function getColumnInfo(bootstrapClass) {
+	    var bootstrapClasses = getColumnSizes(bootstrapClass);
+	    var classes = removeOffsetClass(bootstrapClasses);
+	    console.log("result", sortByColumnSize(classes), bootstrapClasses.map(function (cls) {
+	        return "col-" + cls;
+	    }));
 	}
 
 /***/ },
@@ -22662,7 +22727,7 @@
 	            var images = this.props.flickrData.items.map(function () {
 	                return _flickrImage2.default;
 	            });
-	            return (0, _bootstrapWrapper2.default)(images, 3, "md", props);
+	            return (0, _bootstrapWrapper2.default)(images, 3, "sm", props);
 	        }
 	    }, {
 	        key: "render",
@@ -22764,7 +22829,6 @@
 	        key: "render",
 	        value: function render() {
 	            var imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
-	            console.log(this.state.height, this.state.width);
 	            return _react2.default.createElement(
 	                "div",
 	                null,

@@ -4,6 +4,7 @@ import { getFlickrImages } from "../actions/flickr-actions";
 import Title from "./title";
 import FlickrImages from "./flickr-images";
 import BootstrapWrapper from "./bootstrap-wrapper";
+import { getColumnInfo } from "../utils/general";
 
 export default class FlickrApp extends Component {
 
@@ -16,6 +17,7 @@ export default class FlickrApp extends Component {
             tag,
             unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this))
         };
+        getColumnInfo("col-xs-12, col-lg-3 col-xl-offset-5 col-xl-2, col-xs-3, col-sm-6, col-xs-9 col-xs-1");
     }
 
     componentDidMount() {
