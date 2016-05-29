@@ -4,7 +4,6 @@ import { getFlickrImages } from "../actions/flickr-actions";
 import Title from "./title";
 import FlickrImages from "./flickr-images";
 import BootstrapWrapper from "./bootstrap-wrapper";
-import { getColumnInfo } from "../utils/general";
 
 export default class FlickrApp extends Component {
 

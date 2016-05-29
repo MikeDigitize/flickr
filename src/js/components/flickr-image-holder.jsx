@@ -3,7 +3,7 @@ import Store from "../store/flickr-store";
 import { imageSelected } from "../actions/flickr-actions";
 import { containsSelected } from "../utils/general";
 
-export default class FlickrImage extends Component {
+export default class FlickrImageHolder extends Component {
 
     constructor(props) {
         super();
@@ -46,14 +46,17 @@ export default class FlickrImage extends Component {
         return(
             <div>
                 <div className="flickr-img-holder">
-                    <img className={ imageClass } style={ this.calculateDimensions() } src={ this.state.src } onClick={ FlickrImage.onImageClick } />
-                </div>
-                <div className="flickr-img-data">
-                    <p>{ this.state.date_taken }</p>
-                    <p>{ this.state.author }</p>
-                    <p>{ this.state.published }</p>
+                    <img className={ imageClass } style={ this.calculateDimensions() } src={ this.state.src } onClick={ FlickrImageHolder.onImageClick } />
                 </div>
             </div>
         );
     }
 }
+
+/*
+ <div className="flickr-img-data">
+ <p>{ this.state.date_taken }</p>
+ <p>{ this.state.author }</p>
+ <p>{ this.state.published }</p>
+ </div>
+ */

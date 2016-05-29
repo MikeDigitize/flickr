@@ -20,7 +20,7 @@ import { createReactKey } from "../utils/general";
  *
  */
 
-const BootstrapWrapper = (WrappedComponents, bootstrapClass, propsToAssign = []) => class Wrapper extends Component {
+const BootstrapWrapper = (ComponentsToWrap, bootstrapClass, propsToAssign = []) => class Wrapper extends Component {
 
     static createRowsOfComponents() {
         let rows = [];
@@ -28,12 +28,12 @@ const BootstrapWrapper = (WrappedComponents, bootstrapClass, propsToAssign = [])
         let amount = 12 / Wrapper.getColumnCount(bootstrapClass);
         let end = amount;
 
-        while(start < WrappedComponents.length) {
-            rows.push(WrappedComponents.slice(start, end));
+        while(start < ComponentsToWrap.length) {
+            rows.push(ComponentsToWrap.slice(start, end));
             start += amount;
             end += amount;
-            if(end > WrappedComponents.length) {
-                end = WrappedComponents.length;
+            if(end > ComponentsToWrap.length) {
+                end = ComponentsToWrap.length;
             }
         }
         return rows;
@@ -94,15 +94,20 @@ const BootstrapWrapper = (WrappedComponents, bootstrapClass, propsToAssign = [])
     }
 
     render() {
-        if(!Array.isArray(WrappedComponents)) {
-            WrappedComponents = [WrappedComponents];
+        if(!Array.isArray(ComponentsToWrap)) {
+            ComponentsToWrap = [ComponentsToWrap];
         }
         if(!Object.keys(this.props).length) {
             this.props = propsToAssign;
         }
         let rowsOfComponents = Wrapper.createRowsOfComponents();
+        //return (
+        //    <div>{ rowsOfComponents.map((component, rowIndex) => Wrapper.createRows(component, rowIndex, this.props)) }</div>
+        //);
         return (
-            <div>{ rowsOfComponents.map((component, rowIndex) => Wrapper.createRows(component, rowIndex, this.props)) }</div>
+            <div className="row">
+                { ComponentsToWrap.map((component, index) => Wrapper.createColumns(component, Array.isArray(this.props) ? this.props[index] : this.props, index ))}
+            </div>
         );
     }
 

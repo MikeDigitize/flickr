@@ -20367,8 +20367,6 @@
 
 	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
-	var _general = __webpack_require__(192);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21495,7 +21493,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22611,9 +22609,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _flickrImage = __webpack_require__(195);
+	var _flickrImageHolder = __webpack_require__(195);
 
-	var _flickrImage2 = _interopRequireDefault(_flickrImage);
+	var _flickrImageHolder2 = _interopRequireDefault(_flickrImageHolder);
 
 	var _bootstrapWrapper = __webpack_require__(196);
 
@@ -22662,9 +22660,9 @@
 	                };
 	            });
 	            var images = this.props.flickrData.items.map(function () {
-	                return _flickrImage2.default;
+	                return _flickrImageHolder2.default;
 	            });
-	            return (0, _bootstrapWrapper2.default)(images, "col-sm-4 col-md-4 col-lg-3", props);
+	            return (0, _bootstrapWrapper2.default)(images, "col-sm-4 col-lg-3", props);
 	        }
 	    }, {
 	        key: "render",
@@ -22714,13 +22712,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FlickrImage = function (_Component) {
-	    _inherits(FlickrImage, _Component);
+	var FlickrImageHolder = function (_Component) {
+	    _inherits(FlickrImageHolder, _Component);
 
-	    function FlickrImage(props) {
-	        _classCallCheck(this, FlickrImage);
+	    function FlickrImageHolder(props) {
+	        _classCallCheck(this, FlickrImageHolder);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImage).call(this));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FlickrImageHolder).call(this));
 
 	        var src = props.src;
 	        var author = props.author;
@@ -22744,7 +22742,7 @@
 	        return _this;
 	    }
 
-	    _createClass(FlickrImage, [{
+	    _createClass(FlickrImageHolder, [{
 	        key: "onStoreUpdate",
 	        value: function onStoreUpdate() {
 	            var selected = _flickrStore2.default.getState().flickr.selected;
@@ -22772,26 +22770,7 @@
 	                _react2.default.createElement(
 	                    "div",
 	                    { className: "flickr-img-holder" },
-	                    _react2.default.createElement("img", { className: imageClass, style: this.calculateDimensions(), src: this.state.src, onClick: FlickrImage.onImageClick })
-	                ),
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "flickr-img-data" },
-	                    _react2.default.createElement(
-	                        "p",
-	                        null,
-	                        this.state.date_taken
-	                    ),
-	                    _react2.default.createElement(
-	                        "p",
-	                        null,
-	                        this.state.author
-	                    ),
-	                    _react2.default.createElement(
-	                        "p",
-	                        null,
-	                        this.state.published
-	                    )
+	                    _react2.default.createElement("img", { className: imageClass, style: this.calculateDimensions(), src: this.state.src, onClick: FlickrImageHolder.onImageClick })
 	                )
 	            );
 	        }
@@ -22803,10 +22782,19 @@
 	        }
 	    }]);
 
-	    return FlickrImage;
+	    return FlickrImageHolder;
 	}(_react.Component);
 
-	exports.default = FlickrImage;
+	/*
+	 <div className="flickr-img-data">
+	 <p>{ this.state.date_taken }</p>
+	 <p>{ this.state.author }</p>
+	 <p>{ this.state.published }</p>
+	 </div>
+	 */
+
+
+	exports.default = FlickrImageHolder;
 
 /***/ },
 /* 196 */
@@ -22853,7 +22841,7 @@
 	 *
 	 */
 
-	var BootstrapWrapper = function BootstrapWrapper(WrappedComponents, bootstrapClass) {
+	var BootstrapWrapper = function BootstrapWrapper(ComponentsToWrap, bootstrapClass) {
 	    var propsToAssign = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
 	    return function (_Component) {
 	        _inherits(Wrapper, _Component);
@@ -22869,18 +22857,21 @@
 	            value: function render() {
 	                var _this2 = this;
 
-	                if (!Array.isArray(WrappedComponents)) {
-	                    WrappedComponents = [WrappedComponents];
+	                if (!Array.isArray(ComponentsToWrap)) {
+	                    ComponentsToWrap = [ComponentsToWrap];
 	                }
 	                if (!Object.keys(this.props).length) {
 	                    this.props = propsToAssign;
 	                }
 	                var rowsOfComponents = Wrapper.createRowsOfComponents();
+	                //return (
+	                //    <div>{ rowsOfComponents.map((component, rowIndex) => Wrapper.createRows(component, rowIndex, this.props)) }</div>
+	                //);
 	                return _react2.default.createElement(
 	                    "div",
-	                    null,
-	                    rowsOfComponents.map(function (component, rowIndex) {
-	                        return Wrapper.createRows(component, rowIndex, _this2.props);
+	                    { className: "row" },
+	                    ComponentsToWrap.map(function (component, index) {
+	                        return Wrapper.createColumns(component, Array.isArray(_this2.props) ? _this2.props[index] : _this2.props, index);
 	                    })
 	                );
 	            }
@@ -22892,12 +22883,12 @@
 	                var amount = 12 / Wrapper.getColumnCount(bootstrapClass);
 	                var end = amount;
 
-	                while (start < WrappedComponents.length) {
-	                    rows.push(WrappedComponents.slice(start, end));
+	                while (start < ComponentsToWrap.length) {
+	                    rows.push(ComponentsToWrap.slice(start, end));
 	                    start += amount;
 	                    end += amount;
-	                    if (end > WrappedComponents.length) {
-	                        end = WrappedComponents.length;
+	                    if (end > ComponentsToWrap.length) {
+	                        end = ComponentsToWrap.length;
 	                    }
 	                }
 	                return rows;

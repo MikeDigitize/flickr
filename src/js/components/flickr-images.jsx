@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FlickrImage from "./flickr-image";
+import FlickrImageHolder from "./flickr-image-holder";
 import BootstrapWrapper from "./bootstrap-wrapper";
 
 export default class FlickrImages extends Component {
@@ -19,8 +19,8 @@ export default class FlickrImages extends Component {
                 src : m
             };
         });
-        let images = this.props.flickrData.items.map(() => FlickrImage);
-        return BootstrapWrapper(images, "col-sm-4 col-md-4 col-lg-3", props);
+        let images = this.props.flickrData.items.map(() => FlickrImageHolder);
+        return BootstrapWrapper(images, "col-sm-4 col-lg-3", props);
     }
 
     render() {
