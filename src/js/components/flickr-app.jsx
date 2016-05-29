@@ -36,8 +36,9 @@ export default class FlickrApp extends Component {
         let FlickrTitle = BootstrapWrapper(Title, "col-sm-12");
         return (
             <div>
+                <h1>Flickr Picker!</h1>
                 <FlickrTitle title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
-                <FlickrImages flickrData={ this.state.flickrData } onImageClick={ this.onImageClick } />
+                <FlickrImages flickrData={ this.state.flickrData } />
             </div>
         )
     }

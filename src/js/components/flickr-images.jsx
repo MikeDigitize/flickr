@@ -6,14 +6,13 @@ export default class FlickrImages extends Component {
 
     createImages() {
         let props = this.props.flickrData.items.map((data, i) => {
-            let { author, date_taken, description, link, published } = data;
+            let { author, date_taken, description, link } = data;
             let { width, height, m } = data.media;
             return {
                 author,
                 date_taken,
                 description,
                 link,
-                published,
                 width,
                 height,
                 src : m

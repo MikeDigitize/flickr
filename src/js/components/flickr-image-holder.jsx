@@ -2,18 +2,19 @@ import React, { Component } from "react";
 import Store from "../store/flickr-store";
 import { imageSelected } from "../actions/flickr-actions";
 import { containsSelected } from "../utils/general";
+import FlickrImage from "./flickr-image";
+import FlickrText from "./flickr-text";
 
 export default class FlickrImageHolder extends Component {
 
     constructor(props) {
         super();
-        let { src, author, date_taken, link, published, width, height } = props;
+        let { src, author, date_taken, link, width, height } = props;
         this.state = {
             src,
             author,
             date_taken,
             link,
-            published,
             width,
             height,
             isSelected : false
@@ -30,10 +31,7 @@ export default class FlickrImageHolder extends Component {
     }
 
     calculateDimensions() {
-        return {
-            width : `${this.state.width}px`,
-            top : `${((300 - this.state.height) / 2)}px`
-        }
+        return { width : `${this.state.width}px`, top : `${((300 - this.state.height) / 2)}px` }
     }
 
     static onImageClick(evt) {
@@ -41,22 +39,37 @@ export default class FlickrImageHolder extends Component {
         Store.dispatch(imageSelected(target.src));
     }
 
+    static extractAuthorName(author) {
+        let authorText = author.match(/\((.*)\)/)[1].replace(/\((.*)\)/g, "");
+        if(authorText.length >= 20) {
+            authorText = `${authorText.substr(0,17)}...`;
+        }
+        console.log(authorText);
+        return authorText;
+    }
+
+    static getDateTaken(date) {
+        let dateTaken = new Date(date);
+        return `${dateTaken.getDate()}/${dateTaken.getMonth() + 1}/${dateTaken.getFullYear()}`;
+    }
+
     render() {
-        let imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
+        let holderClass = this.state.isSelected ? "flickr-data-holder selected" : "flickr-data-holder";
         return(
-            <div>
-                <div className="flickr-img-holder">
-                    <img className={ imageClass } style={ this.calculateDimensions() } src={ this.state.src } onClick={ FlickrImageHolder.onImageClick } />
+            <div className={ holderClass }>
+                <div className="flickr-image-holder">
+                    <FlickrImage dimensions={ this.calculateDimensions() } src={ this.state.src } onImageClick={ FlickrImageHolder.onImageClick } />
+                </div>
+                <div className="flickr-image-data">
+                    <FlickrText textClass="flickr-author" text={ `Author: ${FlickrImageHolder.extractAuthorName(this.state.author)}` } />
+                    <FlickrText textClass="flickr-date-taken" text={ `Date taken: ${FlickrImageHolder.getDateTaken(this.state.date_taken)}` } />
                 </div>
             </div>
         );
     }
+
 }
 
 /*
- <div className="flickr-img-data">
- <p>{ this.state.date_taken }</p>
- <p>{ this.state.author }</p>
- <p>{ this.state.published }</p>
- </div>
+
  */

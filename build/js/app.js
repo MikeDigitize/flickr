@@ -20363,7 +20363,7 @@
 
 	var _flickrImages2 = _interopRequireDefault(_flickrImages);
 
-	var _bootstrapWrapper = __webpack_require__(196);
+	var _bootstrapWrapper = __webpack_require__(198);
 
 	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
@@ -20427,8 +20427,13 @@
 	            return _react2.default.createElement(
 	                "div",
 	                null,
+	                _react2.default.createElement(
+	                    "h1",
+	                    null,
+	                    "Flickr Picker!"
+	                ),
 	                _react2.default.createElement(FlickrTitle, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
-	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData, onImageClick: this.onImageClick })
+	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData })
 	            );
 	        }
 	    }]);
@@ -21493,7 +21498,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22525,9 +22530,7 @@
 	}
 
 	function loadImage(src) {
-
 	    return new Promise(function (resolve) {
-
 	        function onLoad() {
 	            removeLoadListener(this, onLoad);
 	            var width = this.width;
@@ -22586,9 +22589,13 @@
 
 	var Title = function Title(props) {
 	  return _react2.default.createElement(
-	    "h1",
+	    "h4",
 	    null,
-	    props.title
+	    _react2.default.createElement(
+	      "em",
+	      null,
+	      props.title
+	    )
 	  );
 	};
 	exports.default = Title;
@@ -22613,7 +22620,7 @@
 
 	var _flickrImageHolder2 = _interopRequireDefault(_flickrImageHolder);
 
-	var _bootstrapWrapper = __webpack_require__(196);
+	var _bootstrapWrapper = __webpack_require__(198);
 
 	var _bootstrapWrapper2 = _interopRequireDefault(_bootstrapWrapper);
 
@@ -22642,7 +22649,6 @@
 	                var date_taken = data.date_taken;
 	                var description = data.description;
 	                var link = data.link;
-	                var published = data.published;
 	                var _data$media = data.media;
 	                var width = _data$media.width;
 	                var height = _data$media.height;
@@ -22653,7 +22659,6 @@
 	                    date_taken: date_taken,
 	                    description: description,
 	                    link: link,
-	                    published: published,
 	                    width: width,
 	                    height: height,
 	                    src: m
@@ -22704,6 +22709,14 @@
 
 	var _general = __webpack_require__(192);
 
+	var _flickrImage = __webpack_require__(196);
+
+	var _flickrImage2 = _interopRequireDefault(_flickrImage);
+
+	var _flickrText = __webpack_require__(197);
+
+	var _flickrText2 = _interopRequireDefault(_flickrText);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22724,7 +22737,6 @@
 	        var author = props.author;
 	        var date_taken = props.date_taken;
 	        var link = props.link;
-	        var published = props.published;
 	        var width = props.width;
 	        var height = props.height;
 
@@ -22733,7 +22745,6 @@
 	            author: author,
 	            date_taken: date_taken,
 	            link: link,
-	            published: published,
 	            width: width,
 	            height: height,
 	            isSelected: false
@@ -22755,22 +22766,25 @@
 	    }, {
 	        key: "calculateDimensions",
 	        value: function calculateDimensions() {
-	            return {
-	                width: this.state.width + "px",
-	                top: (300 - this.state.height) / 2 + "px"
-	            };
+	            return { width: this.state.width + "px", top: (300 - this.state.height) / 2 + "px" };
 	        }
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            var imageClass = this.state.isSelected ? "flickr-img selected" : "flickr-img";
+	            var holderClass = this.state.isSelected ? "flickr-data-holder selected" : "flickr-data-holder";
 	            return _react2.default.createElement(
 	                "div",
-	                null,
+	                { className: holderClass },
 	                _react2.default.createElement(
 	                    "div",
-	                    { className: "flickr-img-holder" },
-	                    _react2.default.createElement("img", { className: imageClass, style: this.calculateDimensions(), src: this.state.src, onClick: FlickrImageHolder.onImageClick })
+	                    { className: "flickr-image-holder" },
+	                    _react2.default.createElement(_flickrImage2.default, { dimensions: this.calculateDimensions(), src: this.state.src, onImageClick: FlickrImageHolder.onImageClick })
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "flickr-image-data" },
+	                    _react2.default.createElement(_flickrText2.default, { textClass: "flickr-author", text: "Author: " + FlickrImageHolder.extractAuthorName(this.state.author) }),
+	                    _react2.default.createElement(_flickrText2.default, { textClass: "flickr-date-taken", text: "Date taken: " + FlickrImageHolder.getDateTaken(this.state.date_taken) })
 	                )
 	            );
 	        }
@@ -22780,17 +22794,29 @@
 	            var target = evt.target || evt.srcElement;
 	            _flickrStore2.default.dispatch((0, _flickrActions.imageSelected)(target.src));
 	        }
+	    }, {
+	        key: "extractAuthorName",
+	        value: function extractAuthorName(author) {
+	            var authorText = author.match(/\((.*)\)/)[1].replace(/\((.*)\)/g, "");
+	            if (authorText.length >= 20) {
+	                authorText = authorText.substr(0, 17) + "...";
+	            }
+	            console.log(authorText);
+	            return authorText;
+	        }
+	    }, {
+	        key: "getDateTaken",
+	        value: function getDateTaken(date) {
+	            var dateTaken = new Date(date);
+	            return dateTaken.getDate() + "/" + (dateTaken.getMonth() + 1) + "/" + dateTaken.getFullYear();
+	        }
 	    }]);
 
 	    return FlickrImageHolder;
 	}(_react.Component);
 
 	/*
-	 <div className="flickr-img-data">
-	 <p>{ this.state.date_taken }</p>
-	 <p>{ this.state.author }</p>
-	 <p>{ this.state.published }</p>
-	 </div>
+
 	 */
 
 
@@ -22798,6 +22824,52 @@
 
 /***/ },
 /* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var FlickrImage = function FlickrImage(props) {
+	  return _react2.default.createElement("img", { className: "flickr-image", style: props.dimensions, src: props.src, onClick: props.onImageClick });
+	};
+	exports.default = FlickrImage;
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var FlickrText = function FlickrText(props) {
+	  return _react2.default.createElement(
+	    "p",
+	    { className: props.className },
+	    props.text
+	  );
+	};
+	exports.default = FlickrText;
+
+/***/ },
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22822,25 +22894,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	/**
-	 * BootstrapWrapper() returns a React component that wraps component functions / classes in Bootstrap rows and columns
-	 *
-	 * It's not too smart so define column classes in numbers divisible by 12 e.g. col-sm-2,3,4,6 (the amount of Bootstrap columns in its grid)
-	 *
-	 * Example usage:
-	 * let heading = props => <h1>{ props.greet } this is a simple stateless component</h1>;
-	 * let Wrapped = BootstrapWrapper(heading, "col-sm-3 col-md-4");
-	 * <Wrapped greet="Hi"/>
-	 *
-	 * Outputs: <div><section class="row"><div class="col-sm-3 col-md-4"><h1>Hello his is a simple stateless component</h1></div></section></div>
-	 *
-	 * @param { Array of or single Function or Class } WrappedComponents
-	 * @param { String } bootstrapClass
-	 * @param { Array (optional) } propsToAssign
-	 * @return { Function } (React Component)
-	 *
-	 */
-
 	var BootstrapWrapper = function BootstrapWrapper(ComponentsToWrap, bootstrapClass) {
 	    var propsToAssign = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
 	    return function (_Component) {
@@ -22863,10 +22916,6 @@
 	                if (!Object.keys(this.props).length) {
 	                    this.props = propsToAssign;
 	                }
-	                var rowsOfComponents = Wrapper.createRowsOfComponents();
-	                //return (
-	                //    <div>{ rowsOfComponents.map((component, rowIndex) => Wrapper.createRows(component, rowIndex, this.props)) }</div>
-	                //);
 	                return _react2.default.createElement(
 	                    "div",
 	                    { className: "row" },
@@ -22876,97 +22925,6 @@
 	                );
 	            }
 	        }], [{
-	            key: "createRowsOfComponents",
-	            value: function createRowsOfComponents() {
-	                var rows = [];
-	                var start = 0;
-	                var amount = 12 / Wrapper.getColumnCount(bootstrapClass);
-	                var end = amount;
-
-	                while (start < ComponentsToWrap.length) {
-	                    rows.push(ComponentsToWrap.slice(start, end));
-	                    start += amount;
-	                    end += amount;
-	                    if (end > ComponentsToWrap.length) {
-	                        end = ComponentsToWrap.length;
-	                    }
-	                }
-	                return rows;
-	            }
-	        }, {
-	            key: "getColumnSizes",
-	            value: function getColumnSizes(bootstrapClass) {
-	                return bootstrapClass.match(/xs-(\w+-)?\d+|sm-(\w+-)?\d+|md-(\w+-)?\d+|lg-(\w+-)?\d+|xl-(\w+-)?\d+/gi) || [];
-	            }
-	        }, {
-	            key: "removeOffsetClass",
-	            value: function removeOffsetClass(bootstrapClasses) {
-	                return bootstrapClasses.map(function (cls) {
-	                    return cls.replace("offset", "").split("-");
-	                }).map(function (cls) {
-	                    return cls.filter(function (cls) {
-	                        return cls;
-	                    });
-	                });
-	            }
-	        }, {
-	            key: "sortLowestToHighest",
-	            value: function sortLowestToHighest(a, b) {
-	                return Number(a[1]) - Number(b[1]);
-	            }
-	        }, {
-	            key: "sortByColumnSize",
-	            value: function sortByColumnSize(bootstrapClasses) {
-
-	                var xs = bootstrapClasses.filter(function (cls) {
-	                    return cls[0] === "xs";
-	                }).sort(function (a, b) {
-	                    return Wrapper.sortLowestToHighest(a, b);
-	                });
-	                var sm = bootstrapClasses.filter(function (cls) {
-	                    return cls[0] === "sm";
-	                }).sort(function (a, b) {
-	                    return Wrapper.sortLowestToHighest(a, b);
-	                });
-	                var md = bootstrapClasses.filter(function (cls) {
-	                    return cls[0] === "md";
-	                }).sort(function (a, b) {
-	                    return Wrapper.sortLowestToHighest(a, b);
-	                });
-	                var lg = bootstrapClasses.filter(function (cls) {
-	                    return cls[0] === "lg";
-	                }).sort(function (a, b) {
-	                    return Wrapper.sortLowestToHighest(a, b);
-	                });
-	                var xl = bootstrapClasses.filter(function (cls) {
-	                    return cls[0] === "xl";
-	                }).sort(function (a, b) {
-	                    return Wrapper.sortLowestToHighest(a, b);
-	                });
-
-	                return [].concat(xs, sm, md, lg, xl).pop();
-	            }
-	        }, {
-	            key: "getColumnCount",
-	            value: function getColumnCount(bootstrapClass) {
-	                var bootstrapClasses = Wrapper.getColumnSizes(bootstrapClass);
-	                var classes = Wrapper.removeOffsetClass(bootstrapClasses);
-	                return Number(Wrapper.sortByColumnSize(classes)[1]);
-	            }
-	        }, {
-	            key: "createRows",
-	            value: function createRows(components, rowIndex, props) {
-	                rowIndex = rowIndex * 12 / Wrapper.getColumnCount(bootstrapClass);
-	                return _react2.default.createElement(
-	                    "section",
-	                    { className: "row", key: (0, _general.createReactKey)() + rowIndex },
-	                    components.map(function (component, componentIndex) {
-	                        var componentProps = Array.isArray(props) ? props[componentIndex + rowIndex] : props;
-	                        return Wrapper.createColumns(component, componentProps, componentIndex + rowIndex);
-	                    })
-	                );
-	            }
-	        }, {
 	            key: "createColumns",
 	            value: function createColumns(Component, props, index) {
 	                return _react2.default.createElement(

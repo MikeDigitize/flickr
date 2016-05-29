@@ -19,9 +19,7 @@ export function removeLoadListener(el, fn) {
 }
 
 export function loadImage(src) {
-
     return new Promise(function (resolve) {
-
         function onLoad() {
             removeLoadListener(this, onLoad);
             let { width, height, src } = this;
@@ -31,7 +29,6 @@ export function loadImage(src) {
         let image = new Image();
         addLoadListener(image, onLoad);
         image.src = src;
-
     });
 }
 
