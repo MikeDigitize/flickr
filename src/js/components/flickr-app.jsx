@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Store from "../store/flickr-store";
 import { getFlickrImages } from "../actions/flickr-actions";
-import Title from "./title";
+import FlickrLoadingStatus from "./flickr-loading-status";
 import FlickrImages from "./flickr-images";
 import BootstrapWrapper from "./bootstrap-wrapper";
 
@@ -33,11 +33,11 @@ export default class FlickrApp extends Component {
     }
 
     render() {
-        let FlickrTitle = BootstrapWrapper(Title, "col-sm-12");
+        let LoadingStatus = BootstrapWrapper(FlickrLoadingStatus, "col-sm-12");
         return (
             <div>
                 <h1>Flickr Picker!</h1>
-                <FlickrTitle title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
+                <LoadingStatus title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
                 <FlickrImages flickrData={ this.state.flickrData } />
             </div>
         )

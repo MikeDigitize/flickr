@@ -42,7 +42,6 @@ export default class FlickrImageHolder extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected);
         return this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected;
     }
 

@@ -20355,9 +20355,9 @@
 
 	var _flickrActions = __webpack_require__(186);
 
-	var _title = __webpack_require__(193);
+	var _flickrLoadingStatus = __webpack_require__(193);
 
-	var _title2 = _interopRequireDefault(_title);
+	var _flickrLoadingStatus2 = _interopRequireDefault(_flickrLoadingStatus);
 
 	var _flickrImages = __webpack_require__(194);
 
@@ -20423,7 +20423,7 @@
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            var FlickrTitle = (0, _bootstrapWrapper2.default)(_title2.default, "col-sm-12");
+	            var LoadingStatus = (0, _bootstrapWrapper2.default)(_flickrLoadingStatus2.default, "col-sm-12");
 	            return _react2.default.createElement(
 	                "div",
 	                null,
@@ -20432,7 +20432,7 @@
 	                    null,
 	                    "Flickr Picker!"
 	                ),
-	                _react2.default.createElement(FlickrTitle, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
+	                _react2.default.createElement(LoadingStatus, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
 	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData })
 	            );
 	        }
@@ -21506,7 +21506,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22591,18 +22591,22 @@
 	}
 
 	function debounce(func, wait, immediate) {
-	    var timeout;
+	    var timeout = void 0;
 	    return function () {
 	        var context = this,
 	            args = arguments;
 	        var later = function later() {
 	            timeout = null;
-	            if (!immediate) func.apply(context, args);
+	            if (!immediate) {
+	                func.apply(context, args);
+	            }
 	        };
 	        var callNow = immediate && !timeout;
 	        clearTimeout(timeout);
 	        timeout = setTimeout(later, wait);
-	        if (callNow) func.apply(context, args);
+	        if (callNow) {
+	            func.apply(context, args);
+	        }
 	    };
 	}
 
@@ -22622,7 +22626,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Title = function Title(props) {
+	var FlickrLoadingStatus = function FlickrLoadingStatus(props) {
 	  return _react2.default.createElement(
 	    "h4",
 	    null,
@@ -22633,7 +22637,7 @@
 	    )
 	  );
 	};
-	exports.default = Title;
+	exports.default = FlickrLoadingStatus;
 
 /***/ },
 /* 194 */
@@ -22689,15 +22693,7 @@
 	                var height = _data$media.height;
 	                var m = _data$media.m;
 
-	                return {
-	                    author: author,
-	                    date_taken: date_taken,
-	                    description: description,
-	                    link: link,
-	                    width: width,
-	                    height: height,
-	                    src: m
-	                };
+	                return { author: author, date_taken: date_taken, description: description, link: link, width: width, height: height, src: m };
 	            });
 	            var images = this.props.flickrData.items.map(function () {
 	                return _flickrImageHolder2.default;
@@ -22813,7 +22809,6 @@
 	    }, {
 	        key: "shouldComponentUpdate",
 	        value: function shouldComponentUpdate(nextProps, nextState) {
-	            console.log(this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected);
 	            return this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected;
 	        }
 	    }, {
