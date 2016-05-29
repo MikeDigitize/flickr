@@ -29,6 +29,18 @@ let karmaServer = (configSrc, browsers, done) => new Server({
         singleRun: true,
         autoWatch: false,
         browsers: browsers
+    }, function (karmaExitStatus) {
+        done();
+        if (karmaExitStatus) {
+            process.exit(1);
+        }
+    }).start();
+
+let karmaServerWatch = (configSrc, browsers, done) => new Server({
+        configFile: configSrc,
+        singleRun: true,
+        autoWatch: false,
+        browsers: browsers
     }, () => {
         done();
     }).start();
@@ -60,7 +72,7 @@ gulp.task("html", () => {
 });
 
 gulp.task("karma", done => {
-    return karmaServer(testConfigSrc, ["PhantomJS"], done);
+    return karmaServerWatch(testConfigSrc, ["PhantomJS"], done);
 });
 
 gulp.task("karma:browser-tests", done => {

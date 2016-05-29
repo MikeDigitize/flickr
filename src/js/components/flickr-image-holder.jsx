@@ -11,16 +11,7 @@ export default class FlickrImageHolder extends Component {
         super();
         let { src, author, date_taken, link, width, height } = props;
         let holderHeight = FlickrImageHolder.getHolderHeight();
-        this.state = {
-            src,
-            author,
-            date_taken,
-            link,
-            width,
-            height,
-            holderHeight,
-            isSelected : false
-        };
+        this.state = { src, author, date_taken, link, width, height, holderHeight, isSelected : false };
         Store.subscribe(this.onStoreUpdate.bind(this));
     }
 
@@ -35,10 +26,7 @@ export default class FlickrImageHolder extends Component {
         let { selected } = Store.getState().flickr;
         let isSelected = containsSelected(selected, this.state.src);
         let holderHeight = FlickrImageHolder.getHolderHeight();
-        this.setState({
-            isSelected,
-            holderHeight
-        });
+        this.setState({ isSelected, holderHeight });
     }
 
     shouldComponentUpdate(nextProps, nextState) {

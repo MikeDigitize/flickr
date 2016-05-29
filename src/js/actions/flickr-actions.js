@@ -1,10 +1,12 @@
 import { getFlickrJson } from "../utils/get-flickr-json";
-import { loadImages, filterImages } from "../utils/general";
+import { loadImages, filterImages, getFromLocalStorage } from "../utils/general";
 import "../utils/object-assign-polyfill";
 
 export const RETRIEVEDATA = "RETRIEVEDATA";
 export function getFlickrImages(tag) {
     let flickrData;
+    let savedData = getFromLocalStorage();
+    console.log("savedData", savedData);
     return dispatch => {
         getFlickrJson(tag).then(function (data) {
             flickrData = data;

@@ -77,3 +77,20 @@ export function debounce(func, wait, immediate) {
         }
     };
 }
+
+export function getFromLocalStorage() {
+    let data = JSON.parse(localStorage.getItem("flickr-favourites"));
+    if(!data) {
+        localStorage.setItem("flickr-favourites", JSON.stringify({ faves : [] }));
+        return [];
+    }
+    else {
+        return data.faves;
+    }
+}
+
+export function saveToLocalStorage(selected) {
+    let flickrData = getFromLocalStorage();
+    flickrData.faves = selected;
+    localStorage.setItem("flickr-favourites", JSON.stringify(flickrData));
+}

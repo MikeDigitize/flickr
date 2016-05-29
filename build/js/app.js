@@ -20389,12 +20389,7 @@
 	        var flickrData = _Store$getState$flick.flickrData;
 	        var tag = _Store$getState$flick.tag;
 
-	        _this.state = {
-	            loading: loading,
-	            flickrData: flickrData,
-	            tag: tag,
-	            unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this))
-	        };
+	        _this.state = { loading: loading, flickrData: flickrData, tag: tag, unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this)) };
 	        return _this;
 	    }
 
@@ -20413,10 +20408,7 @@
 	            var loading = _Store$getState$flick2.loading;
 	            var flickrData = _Store$getState$flick2.flickrData;
 
-	            this.setState({
-	                loading: loading,
-	                flickrData: flickrData
-	            }, function () {
+	            this.setState({ loading: loading, flickrData: flickrData }, function () {
 	                _this2.state.unsubscribe();
 	            });
 	        }
@@ -21447,6 +21439,8 @@
 	var RETRIEVEDATA = exports.RETRIEVEDATA = "RETRIEVEDATA";
 	function getFlickrImages(tag) {
 	    var flickrData = void 0;
+	    var savedData = (0, _general.getFromLocalStorage)();
+	    console.log("savedData", savedData);
 	    return function (dispatch) {
 	        (0, _getFlickrJson.getFlickrJson)(tag).then(function (data) {
 	            flickrData = data;
@@ -21482,31 +21476,32 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	        value: true
+	    value: true
 	});
 	exports.getFlickrJson = getFlickrJson;
 
 	__webpack_require__(188);
 
 	function getFlickrJson(tag) {
-	        return new Promise(function (resolve, reject) {
+	    return new Promise(function (resolve, reject) {
 
-	                var script = document.createElement("script");
-	                script.src = "http://api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=flickrcb&tags=" + tag;
-	                document.head.appendChild(script);
+	        var script = document.createElement("script");
+	        script.src = "http://api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=flickrcb&tags=" + tag;
+	        document.head.appendChild(script);
 
-	                // much rather ajax / fetch it with an api key!
-	                window.flickrcb = function (data) {
-	                        return resolve(data);
-	                };
-	        });
+	        // much rather ajax / fetch it with an api key!
+	        window.flickrcb = function (data) {
+	            resolve(data);
+	            window.flickrcb = null;
+	        };
+	    });
 	}
 
 /***/ },
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22518,6 +22513,8 @@
 	exports.getWindowWidth = getWindowWidth;
 	exports.getHolderHeight = getHolderHeight;
 	exports.debounce = debounce;
+	exports.getFromLocalStorage = getFromLocalStorage;
+	exports.saveToLocalStorage = saveToLocalStorage;
 	function createReactKey() {
 	    return Math.random().toString(16).substr(2, 9);
 	}
@@ -22608,6 +22605,22 @@
 	            func.apply(context, args);
 	        }
 	    };
+	}
+
+	function getFromLocalStorage() {
+	    var data = JSON.parse(localStorage.getItem("flickr-favourites"));
+	    if (!data) {
+	        localStorage.setItem("flickr-favourites", JSON.stringify({ faves: [] }));
+	        return [];
+	    } else {
+	        return data.faves;
+	    }
+	}
+
+	function saveToLocalStorage(selected) {
+	    var flickrData = getFromLocalStorage();
+	    flickrData.faves = selected;
+	    localStorage.setItem("flickr-favourites", JSON.stringify(flickrData));
 	}
 
 /***/ },
@@ -22772,16 +22785,7 @@
 	        var height = props.height;
 
 	        var holderHeight = FlickrImageHolder.getHolderHeight();
-	        _this.state = {
-	            src: src,
-	            author: author,
-	            date_taken: date_taken,
-	            link: link,
-	            width: width,
-	            height: height,
-	            holderHeight: holderHeight,
-	            isSelected: false
-	        };
+	        _this.state = { src: src, author: author, date_taken: date_taken, link: link, width: width, height: height, holderHeight: holderHeight, isSelected: false };
 	        _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this));
 	        return _this;
 	    }
@@ -22801,10 +22805,7 @@
 
 	            var isSelected = (0, _general.containsSelected)(selected, this.state.src);
 	            var holderHeight = FlickrImageHolder.getHolderHeight();
-	            this.setState({
-	                isSelected: isSelected,
-	                holderHeight: holderHeight
-	            });
+	            this.setState({ isSelected: isSelected, holderHeight: holderHeight });
 	        }
 	    }, {
 	        key: "shouldComponentUpdate",

@@ -10,12 +10,7 @@ export default class FlickrApp extends Component {
     constructor() {
         super();
         let { loading, flickrData, tag } = Store.getState().flickr;
-        this.state = {
-            loading,
-            flickrData,
-            tag,
-            unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this))
-        };
+        this.state = { loading, flickrData, tag, unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this)) };
     }
 
     componentDidMount() {
@@ -24,10 +19,7 @@ export default class FlickrApp extends Component {
 
     onStoreUpdate() {
         let { loading, flickrData } = Store.getState().flickr;
-        this.setState({
-            loading,
-            flickrData
-        }, () => {
+        this.setState({ loading, flickrData }, () => {
             this.state.unsubscribe();
         });
     }

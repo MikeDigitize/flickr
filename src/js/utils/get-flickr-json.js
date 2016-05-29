@@ -8,7 +8,10 @@ export function getFlickrJson(tag) {
         document.head.appendChild(script);
 
         // much rather ajax / fetch it with an api key!
-        window.flickrcb = data => resolve(data);
+        window.flickrcb = data => {
+            resolve(data);
+            window.flickrcb = null;
+        }
 
     });
 }
