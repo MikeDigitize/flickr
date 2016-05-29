@@ -20388,8 +20388,9 @@
 	        var loading = _Store$getState$flick.loading;
 	        var flickrData = _Store$getState$flick.flickrData;
 	        var tag = _Store$getState$flick.tag;
+	        var loadingMessage = _Store$getState$flick.loadingMessage;
 
-	        _this.state = { loading: loading, flickrData: flickrData, tag: tag, unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this)) };
+	        _this.state = { loading: loading, flickrData: flickrData, tag: tag, loadingMessage: loadingMessage, unsubscribe: _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this)) };
 	        return _this;
 	    }
 
@@ -20407,8 +20408,9 @@
 
 	            var loading = _Store$getState$flick2.loading;
 	            var flickrData = _Store$getState$flick2.flickrData;
+	            var loadingMessage = _Store$getState$flick2.loadingMessage;
 
-	            this.setState({ loading: loading, flickrData: flickrData }, function () {
+	            this.setState({ loading: loading, flickrData: flickrData, loadingMessage: loadingMessage }, function () {
 	                _this2.state.unsubscribe();
 	            });
 	        }
@@ -20424,7 +20426,7 @@
 	                    null,
 	                    "Flickr Picker!"
 	                ),
-	                _react2.default.createElement(LoadingStatus, { title: this.state.loading ? "Please wait... loading" : this.state.flickrData.title }),
+	                _react2.default.createElement(LoadingStatus, { title: this.state.loadingMessage }),
 	                _react2.default.createElement(_flickrImages2.default, { flickrData: this.state.flickrData })
 	            );
 	        }
@@ -21358,7 +21360,8 @@
 	    loading: true,
 	    flickrData: { items: [] },
 	    tag: "london",
-	    selected: []
+	    selected: [],
+	    loadingMessage: "Please wait... loading"
 	};
 
 	function flickrReducer() {
@@ -21369,14 +21372,20 @@
 	        case _flickrActions.DATALOADED:
 	            return Object.assign({}, state, {
 	                loading: false,
-	                flickrData: action.data
+	                flickrData: action.data.flickrData,
+	                loadingMessage: action.data.flickrData.title,
+	                selected: action.data.selected
+	            });
+	        case _flickrActions.UNABLETOCONNECTTOFLICKR:
+	            return Object.assign({}, state, {
+	                loading: false,
+	                loadingMessage: "Sorry, we can't connect to Flickr right now, please try again later"
 	            });
 	        case _flickrActions.IMAGECLICKED:
 	            var imageSrc = action.data;
 	            var selected = (0, _general.containsSelected)(state.selected, imageSrc) ? (0, _general.removeSelected)(state.selected, imageSrc) : state.selected.concat(imageSrc);
-	            return Object.assign({}, state, {
-	                selected: selected
-	            });
+	            (0, _general.saveToLocalStorage)(selected);
+	            return Object.assign({}, state, { selected: selected });
 	        case _flickrActions.WINDOWWIDTHCHANGE:
 	            return state;
 	        default:
@@ -21424,9 +21433,10 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.WINDOWWIDTHCHANGE = exports.IMAGECLICKED = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
+	exports.WINDOWWIDTHCHANGE = exports.IMAGECLICKED = exports.UNABLETOCONNECTTOFLICKR = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
 	exports.getFlickrImages = getFlickrImages;
 	exports.dataLoaded = dataLoaded;
+	exports.unableToConnectToFlickr = unableToConnectToFlickr;
 	exports.imageSelected = imageSelected;
 	exports.windowWidthChange = windowWidthChange;
 
@@ -21440,7 +21450,6 @@
 	function getFlickrImages(tag) {
 	    var flickrData = void 0;
 	    var savedData = (0, _general.getFromLocalStorage)();
-	    console.log("savedData", savedData);
 	    return function (dispatch) {
 	        (0, _getFlickrJson.getFlickrJson)(tag).then(function (data) {
 	            flickrData = data;
@@ -21449,7 +21458,13 @@
 	            var data = Object.assign({}, flickrData, {
 	                items: (0, _general.filterImages)(images, flickrData.items)
 	            });
-	            dispatch(dataLoaded(data));
+	            var result = {
+	                flickrData: data,
+	                selected: savedData
+	            };
+	            dispatch(dataLoaded(result));
+	        }).catch(function (err) {
+	            dispatch(unableToConnectToFlickr());
 	        });
 	    };
 	}
@@ -21457,6 +21472,11 @@
 	var DATALOADED = exports.DATALOADED = "DATALOADED";
 	function dataLoaded(data) {
 	    return { data: data, type: DATALOADED };
+	}
+
+	var UNABLETOCONNECTTOFLICKR = exports.UNABLETOCONNECTTOFLICKR = "UNABLETOCONNECTTOFLICKR";
+	function unableToConnectToFlickr() {
+	    return { type: UNABLETOCONNECTTOFLICKR };
 	}
 
 	var IMAGECLICKED = exports.IMAGECLICKED = "IMAGECLICKED";
@@ -21483,17 +21503,23 @@
 	__webpack_require__(188);
 
 	function getFlickrJson(tag) {
-	    return new Promise(function (resolve, reject) {
 
+	    return new Promise(function (resolve, reject) {
 	        var script = document.createElement("script");
 	        script.src = "http://api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=flickrcb&tags=" + tag;
 	        document.head.appendChild(script);
 
-	        // much rather ajax / fetch it with an api key!
-	        window.flickrcb = function (data) {
-	            resolve(data);
-	            window.flickrcb = null;
-	        };
+	        // ajax / fetch it with an api key please!!
+	        window.flickrcb = function () {
+	            setTimeout(function () {
+	                reject("api.flickr.com took too long to respond");
+	                delete window.flickrcb; // this message will self destruct
+	            }, 2000);
+	            return function (data) {
+	                resolve(data);
+	                delete window.flickrcb;
+	            };
+	        }();
 	    });
 	}
 
@@ -22590,8 +22616,8 @@
 	function debounce(func, wait, immediate) {
 	    var timeout = void 0;
 	    return function () {
-	        var context = this,
-	            args = arguments;
+	        var context = this;
+	        var args = arguments;
 	        var later = function later() {
 	            timeout = null;
 	            if (!immediate) {
@@ -22619,8 +22645,9 @@
 
 	function saveToLocalStorage(selected) {
 	    var flickrData = getFromLocalStorage();
-	    flickrData.faves = selected;
-	    localStorage.setItem("flickr-favourites", JSON.stringify(flickrData));
+	    var updatedData = {};
+	    updatedData.faves = selected;
+	    localStorage.setItem("flickr-favourites", JSON.stringify(updatedData));
 	}
 
 /***/ },

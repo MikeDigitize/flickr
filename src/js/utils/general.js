@@ -62,7 +62,8 @@ export function getHolderHeight(width) {
 export function debounce(func, wait, immediate) {
     let timeout;
     return function() {
-        let context = this, args = arguments;
+        let context = this;
+        let args = arguments;
         let later = () => {
             timeout = null;
             if(!immediate) {
@@ -91,6 +92,7 @@ export function getFromLocalStorage() {
 
 export function saveToLocalStorage(selected) {
     let flickrData = getFromLocalStorage();
-    flickrData.faves = selected;
-    localStorage.setItem("flickr-favourites", JSON.stringify(flickrData));
+    let updatedData = {};
+    updatedData.faves = selected;
+    localStorage.setItem("flickr-favourites", JSON.stringify(updatedData));
 }

@@ -9,8 +9,8 @@ export default class FlickrApp extends Component {
 
     constructor() {
         super();
-        let { loading, flickrData, tag } = Store.getState().flickr;
-        this.state = { loading, flickrData, tag, unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this)) };
+        let { loading, flickrData, tag, loadingMessage } = Store.getState().flickr;
+        this.state = { loading, flickrData, tag, loadingMessage, unsubscribe : Store.subscribe(this.onStoreUpdate.bind(this)) };
     }
 
     componentDidMount() {
@@ -18,8 +18,8 @@ export default class FlickrApp extends Component {
     }
 
     onStoreUpdate() {
-        let { loading, flickrData } = Store.getState().flickr;
-        this.setState({ loading, flickrData }, () => {
+        let { loading, flickrData, loadingMessage } = Store.getState().flickr;
+        this.setState({ loading, flickrData, loadingMessage }, () => {
             this.state.unsubscribe();
         });
     }
@@ -29,7 +29,7 @@ export default class FlickrApp extends Component {
         return (
             <div>
                 <h1>Flickr Picker!</h1>
-                <LoadingStatus title={ this.state.loading ? "Please wait... loading" : this.state.flickrData.title } />
+                <LoadingStatus title={ this.state.loadingMessage } />
                 <FlickrImages flickrData={ this.state.flickrData } />
             </div>
         )
