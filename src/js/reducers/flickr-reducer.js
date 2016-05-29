@@ -1,5 +1,5 @@
 import "../utils/object-assign-polyfill";
-import { DATALOADED, IMAGECLICKED } from "../actions/flickr-actions";
+import { DATALOADED, IMAGECLICKED, WINDOWWIDTHCHANGE } from "../actions/flickr-actions";
 import { containsSelected, removeSelected } from "../utils/general";
 
 let initialState = {
@@ -22,6 +22,8 @@ export default function flickrReducer(state = initialState, action = {}) {
             return Object.assign({}, state, {
                 selected
             });
+        case WINDOWWIDTHCHANGE :
+            return state;
         default :
             return state;
     }

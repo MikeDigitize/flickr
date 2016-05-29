@@ -27,3 +27,8 @@ export const IMAGECLICKED = "IMAGECLICKED";
 export function imageSelected(data) {
     return { data, type : IMAGECLICKED }
 }
+
+export const WINDOWWIDTHCHANGE = "WINDOWWIDTHCHANGE";
+export function windowWidthChange(data) {
+    return { data, type : WINDOWWIDTHCHANGE }
+}

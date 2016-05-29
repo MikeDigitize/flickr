@@ -21385,6 +21385,8 @@
 	            return Object.assign({}, state, {
 	                selected: selected
 	            });
+	        case _flickrActions.WINDOWWIDTHCHANGE:
+	            return state;
 	        default:
 	            return state;
 	    }
@@ -21430,10 +21432,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.IMAGECLICKED = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
+	exports.WINDOWWIDTHCHANGE = exports.IMAGECLICKED = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
 	exports.getFlickrImages = getFlickrImages;
 	exports.dataLoaded = dataLoaded;
 	exports.imageSelected = imageSelected;
+	exports.windowWidthChange = windowWidthChange;
 
 	var _getFlickrJson = __webpack_require__(187);
 
@@ -21467,6 +21470,11 @@
 	    return { data: data, type: IMAGECLICKED };
 	}
 
+	var WINDOWWIDTHCHANGE = exports.WINDOWWIDTHCHANGE = "WINDOWWIDTHCHANGE";
+	function windowWidthChange(data) {
+	    return { data: data, type: WINDOWWIDTHCHANGE };
+	}
+
 /***/ },
 /* 187 */
 /***/ function(module, exports, __webpack_require__) {
@@ -21498,7 +21506,7 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -22507,6 +22515,9 @@
 	exports.loadImages = loadImages;
 	exports.filterImageHeight = filterImageHeight;
 	exports.filterImages = filterImages;
+	exports.getWindowWidth = getWindowWidth;
+	exports.getHolderHeight = getHolderHeight;
+	exports.debounce = debounce;
 	function createReactKey() {
 	    return Math.random().toString(16).substr(2, 9);
 	}
@@ -22569,6 +22580,30 @@
 	        data.media.height = match.height;
 	        return data;
 	    });
+	}
+
+	function getWindowWidth() {
+	    return window.innerWidth;
+	}
+
+	function getHolderHeight(width) {
+	    return width > 790 ? 300 : width < 790 && width > 690 ? 280 : 225;
+	}
+
+	function debounce(func, wait, immediate) {
+	    var timeout;
+	    return function () {
+	        var context = this,
+	            args = arguments;
+	        var later = function later() {
+	            timeout = null;
+	            if (!immediate) func.apply(context, args);
+	        };
+	        var callNow = immediate && !timeout;
+	        clearTimeout(timeout);
+	        timeout = setTimeout(later, wait);
+	        if (callNow) func.apply(context, args);
+	    };
 	}
 
 /***/ },
@@ -22667,7 +22702,7 @@
 	            var images = this.props.flickrData.items.map(function () {
 	                return _flickrImageHolder2.default;
 	            });
-	            return (0, _bootstrapWrapper2.default)(images, "col-sm-4 col-lg-3", props);
+	            return (0, _bootstrapWrapper2.default)(images, "col-sm-6 col-md-4 col-lg-3", props);
 	        }
 	    }, {
 	        key: "render",
@@ -22740,6 +22775,7 @@
 	        var width = props.width;
 	        var height = props.height;
 
+	        var holderHeight = FlickrImageHolder.getHolderHeight();
 	        _this.state = {
 	            src: src,
 	            author: author,
@@ -22747,6 +22783,7 @@
 	            link: link,
 	            width: width,
 	            height: height,
+	            holderHeight: holderHeight,
 	            isSelected: false
 	        };
 	        _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this));
@@ -22754,19 +22791,35 @@
 	    }
 
 	    _createClass(FlickrImageHolder, [{
+	        key: "componentDidMount",
+	        value: function componentDidMount() {
+	            var onResize = (0, _general.debounce)(function () {
+	                _flickrStore2.default.dispatch((0, _flickrActions.windowWidthChange)());
+	            }, 100);
+	            window.addEventListener("resize", onResize);
+	        }
+	    }, {
 	        key: "onStoreUpdate",
 	        value: function onStoreUpdate() {
 	            var selected = _flickrStore2.default.getState().flickr.selected;
 
 	            var isSelected = (0, _general.containsSelected)(selected, this.state.src);
+	            var holderHeight = FlickrImageHolder.getHolderHeight();
 	            this.setState({
-	                isSelected: isSelected
+	                isSelected: isSelected,
+	                holderHeight: holderHeight
 	            });
 	        }
 	    }, {
-	        key: "calculateDimensions",
-	        value: function calculateDimensions() {
-	            return { width: this.state.width + "px", top: (300 - this.state.height) / 2 + "px" };
+	        key: "shouldComponentUpdate",
+	        value: function shouldComponentUpdate(nextProps, nextState) {
+	            console.log(this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected);
+	            return this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected;
+	        }
+	    }, {
+	        key: "calculateImageDimensions",
+	        value: function calculateImageDimensions() {
+	            return { width: this.state.width + "px", top: (this.state.holderHeight - this.state.height) / 2 + "px" };
 	        }
 	    }, {
 	        key: "render",
@@ -22778,7 +22831,7 @@
 	                _react2.default.createElement(
 	                    "div",
 	                    { className: "flickr-image-holder" },
-	                    _react2.default.createElement(_flickrImage2.default, { dimensions: this.calculateDimensions(), src: this.state.src, onImageClick: FlickrImageHolder.onImageClick })
+	                    _react2.default.createElement(_flickrImage2.default, { dimensions: this.calculateImageDimensions(), src: this.state.src, onImageClick: FlickrImageHolder.onImageClick })
 	                ),
 	                _react2.default.createElement(
 	                    "div",
@@ -22798,11 +22851,7 @@
 	        key: "extractAuthorName",
 	        value: function extractAuthorName(author) {
 	            var authorText = author.match(/\((.*)\)/)[1].replace(/\((.*)\)/g, "");
-	            if (authorText.length >= 20) {
-	                authorText = authorText.substr(0, 17) + "...";
-	            }
-	            console.log(authorText);
-	            return authorText;
+	            return authorText.length >= 20 ? authorText.substr(0, 17) + "..." : authorText;
 	        }
 	    }, {
 	        key: "getDateTaken",
@@ -22810,15 +22859,15 @@
 	            var dateTaken = new Date(date);
 	            return dateTaken.getDate() + "/" + (dateTaken.getMonth() + 1) + "/" + dateTaken.getFullYear();
 	        }
+	    }, {
+	        key: "getHolderHeight",
+	        value: function getHolderHeight() {
+	            return (0, _general.getHolderHeight)((0, _general.getWindowWidth)());
+	        }
 	    }]);
 
 	    return FlickrImageHolder;
 	}(_react.Component);
-
-	/*
-
-	 */
-
 
 	exports.default = FlickrImageHolder;
 
