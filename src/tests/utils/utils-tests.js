@@ -10,7 +10,7 @@ describe("Get Flickr JSON test", function() {
     });
 
     it("Should return data from the flickr API", function() {
-        let flickrData = getFlickrJson();
+        let flickrData = getFlickrJson("london");
         return flickrData.then(data => {
             expect(data).to.be.an("object");
             expect(data.items).to.be.an("array");
