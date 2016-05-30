@@ -41,7 +41,7 @@ The images come back all shapes and sizes from the Flickr API so I did some extr
 
 Any clicked upon images are favourited - indicated by the dashed line around the image holder. This then saves the image in localstorage. When the app loads localstorage is checked and all the images favourited are compared against the ones returned from the Flickr API. Any that exist in both are filtered out from the saved favourited array and the remainding are appended to the image array sent from Flickr so as not to show the same image twice.
 
-I would have liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. I would definitely have liked to have spent more time styling the app but I'll save that for version 2!
+I would have liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. Also some extra error checking would have been useful whilst loading images into cache to check images favourited haven't been removed from Flickr since the page was last loaded. Some more styling wouldn't have gone amiss either!
 
 
 

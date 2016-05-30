@@ -95,7 +95,6 @@ export function getFromLocalStorage() {
 }
 
 export function saveToLocalStorage(selected) {
-    let flickrData = getFromLocalStorage();
     let updatedData = {};
     updatedData.faves = selected;
     localStorage.setItem("flickr-favourites", JSON.stringify(updatedData));
