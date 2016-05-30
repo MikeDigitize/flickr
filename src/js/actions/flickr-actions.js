@@ -79,6 +79,6 @@ export function removeSelected(data) {
 }
 
 export const WINDOWWIDTHCHANGE = "WINDOWWIDTHCHANGE";
-export function windowWidthChange(data) {
-    return { data, type : WINDOWWIDTHCHANGE };
+export function windowWidthChange() {
+    return { type : WINDOWWIDTHCHANGE };
 }
