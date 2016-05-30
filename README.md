@@ -27,7 +27,7 @@ Run `gulp build:production` to build HTML, CSS and JavaScript using `Webpack` in
 ### To test
 
 Run `npm test` to test in Chrome, Firefox, IE10 and IE9 (haven't upgraded my IE10 yet because it has more accurate IE9 emulation than IE11 and above!)
-
+Caveat: Slower machines may struggle opening up multiple browsers at once and completing all tests so if you get any errors consider editing the `gulpfile` and running the test against one or two at a time.
 
 ### Notes
 
@@ -41,7 +41,7 @@ The images come back all shapes and sizes from the Flickr API so I did some extr
 
 Any clicked upon images are favourited - indicated by the dashed line around the image holder. This then saves the image in localstorage. When the app loads localstorage is checked and all the images favourited are compared against the ones returned from the Flickr API. Any that exist in both are filtered out from the saved favourited array and the remainding are appended to the image array sent from Flickr so as not to show the same image twice.
 
-I would have liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. I would definitely have liked to spend more time styling the app but I'd already spent a lot of time on developing it this far.
+I would have liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. I would definitely have liked to have spent more time styling the app but I'll save that for version 2!
 
 
 

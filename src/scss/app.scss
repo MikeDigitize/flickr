@@ -4,6 +4,12 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: capitalize;
 }
 
+h6 {
+  margin-bottom: 20px;
+  color: #999;
+  text-transform: inherit;
+}
+
 .flickr-data-holder {
   border: 6px transparent solid;
   padding:5px;
@@ -35,7 +41,24 @@ h1, h2, h3, h4, h5, h6 {
   .flickr-image-data {
     height: 100px;
     text-align: center;
-    margin-top: 5px;
+    margin: 5px auto 10px;
+
+    .flickr-author {
+      text-transform: capitalize;
+      font-style: italic;
+      color: #666;
+    }
+
+    .flickr-date-taken {
+      color: #999;
+    }
+
+    .flickr-selected {
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: capitalize;
+      text-decoration: underline;
+    }
   }
 
   &.selected {

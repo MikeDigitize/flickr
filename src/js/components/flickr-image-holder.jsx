@@ -11,10 +11,12 @@ export default class FlickrImageHolder extends Component {
         super();
         let { src, author, date_taken, link, width, height } = props;
         let holderHeight = FlickrImageHolder.getHolderHeight();
-        this.state = { src, author, date_taken, link, width, height, holderHeight, isSelected : isImageSelected(Store.getState().flickr.selected, src) };
+        let isSelected = isImageSelected(Store.getState().flickr.selected, src);
+        this.state = { src, author, date_taken, link, width, height, holderHeight, isSelected };
         Store.subscribe(this.onStoreUpdate.bind(this));
     }
 
+    // to adjust image position on smaller viewports
     componentDidMount() {
         let onResize = debounce(function() {
             Store.dispatch(windowWidthChange());
@@ -34,6 +36,7 @@ export default class FlickrImageHolder extends Component {
         return this.state.holderHeight !== nextState.holderHeight || this.state.isSelected !== nextState.isSelected;
     }
 
+    // to assist with smaller viewports
     calculateImageDimensions() {
         return { width : `${this.state.width}px`, top : `${((this.state.holderHeight - this.state.height) / 2)}px` }
     }
@@ -65,11 +68,26 @@ export default class FlickrImageHolder extends Component {
         return(
             <div className={ holderClass }>
                 <div className="flickr-image-holder">
-                    <FlickrImage dimensions={ this.calculateImageDimensions() } src={ this.state.src } onImageClick={ FlickrImageHolder.onImageClick } />
+                    <FlickrImage
+                        dimensions={ this.calculateImageDimensions() }
+                        src={ this.state.src }
+                        onImageClick={ FlickrImageHolder.onImageClick }
+                    />
                 </div>
                 <div className="flickr-image-data">
-                    <FlickrText textClass="flickr-author" text={ `Author: ${FlickrImageHolder.extractAuthorName(this.state.author)}` } />
-                    <FlickrText textClass="flickr-date-taken" text={ `Date taken: ${FlickrImageHolder.getDateTaken(this.state.date_taken)}` } />
+                    <FlickrText
+                        title={ this.state.author }
+                        textClass="flickr-author"
+                        text={ `Author: ${FlickrImageHolder.extractAuthorName(this.state.author)}` }
+                    />
+                    <FlickrText
+                        textClass="flickr-date-taken"
+                        text={ `Date taken: ${FlickrImageHolder.getDateTaken(this.state.date_taken)}` }
+                    />
+                    <FlickrText
+                        textClass="flickr-selected"
+                        text={ this.state.isSelected ? "Favourited!" : false }
+                    />
                 </div>
             </div>
         );

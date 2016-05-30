@@ -30,6 +30,7 @@ export default class FlickrApp extends Component {
             <div>
                 <h1>Flickr Picker!</h1>
                 <LoadingStatus title={ this.state.loadingMessage } />
+                <h6>Click on an image to toggle it as a favourite</h6>
                 <FlickrImages flickrData={ this.state.flickrData } />
             </div>
         )

@@ -93,7 +93,7 @@ gulp.task("karma", done => {
 });
 
 gulp.task("karma:browser-tests", done => {
-    return karmaServer(testConfigSrc, ["PhantomJS", "Chrome", "Firefox", "IE10", "IE9"], done);
+    return karmaServer(testConfigSrc, ["Chrome", "Firefox", "IE10", "IE9"], done);
 });
 
 gulp.task("build:production", () => {
