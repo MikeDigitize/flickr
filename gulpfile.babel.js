@@ -5,8 +5,10 @@ import autoprefixer from "gulp-autoprefixer";
 import minimise from "gulp-cssnano";
 import concat from "gulp-concat";
 import plumber from "gulp-plumber";
+import sequence from "run-sequence";
 
-import webpack from "webpack-stream";
+import webpack from "webpack";
+import webpackStream from "webpack-stream";
 import { Server } from "karma";
 
 let bootstrap4Source = "./src/scss/bootstrap-custom.scss";
@@ -48,7 +50,22 @@ let karmaServerWatch = (configSrc, browsers, done) => new Server({
 gulp.task("js", () => {
     return gulp.src(jsSource)
         .pipe(plumber())
-        .pipe(webpack(require(webpackConfigSrc)))
+        .pipe(webpackStream(require(webpackConfigSrc)))
+        .pipe(gulp.dest(jsDest));
+});
+
+gulp.task("js:prod", () => {
+    let prodConfig = Object.assign({}, require(webpackConfigSrc), {
+        watch : false
+    });
+    prodConfig.plugins.push(new webpack.optimize.UglifyJsPlugin());
+    prodConfig.plugins.push(new webpack.DefinePlugin({
+        'process.env.NODE_ENV':  '"production"'
+    }));
+
+    return gulp.src(jsSource)
+        .pipe(plumber())
+        .pipe(webpackStream(prodConfig))
         .pipe(gulp.dest(jsDest));
 });
 
@@ -77,6 +94,10 @@ gulp.task("karma", done => {
 
 gulp.task("karma:browser-tests", done => {
     return karmaServer(testConfigSrc, ["PhantomJS", "Chrome", "Firefox", "IE10", "IE9"], done);
+});
+
+gulp.task("build:production", () => {
+    return sequence("html", "styles", "js:prod");
 });
 
 gulp.task("watch", function() {
