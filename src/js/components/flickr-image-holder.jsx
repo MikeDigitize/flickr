@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Store from "../store/flickr-store";
-import { imageSelected, windowWidthChange } from "../actions/flickr-actions";
-import { containsSelected, getWindowWidth, getHolderHeight, debounce } from "../utils/general";
+import { windowWidthChange, updateSelected } from "../actions/flickr-actions";
+import { getWindowWidth, getHolderHeight, debounce, findInFlickrData, isImageSelected } from "../utils/general";
 import FlickrImage from "./flickr-image";
 import FlickrText from "./flickr-text";
 
@@ -11,7 +11,7 @@ export default class FlickrImageHolder extends Component {
         super();
         let { src, author, date_taken, link, width, height } = props;
         let holderHeight = FlickrImageHolder.getHolderHeight();
-        this.state = { src, author, date_taken, link, width, height, holderHeight, isSelected : false };
+        this.state = { src, author, date_taken, link, width, height, holderHeight, isSelected : isImageSelected(Store.getState().flickr.selected, src) };
         Store.subscribe(this.onStoreUpdate.bind(this));
     }
 
@@ -23,8 +23,9 @@ export default class FlickrImageHolder extends Component {
     }
 
     onStoreUpdate() {
-        let { selected } = Store.getState().flickr;
-        let isSelected = containsSelected(selected, this.state.src);
+        let { selected, flickrData } = Store.getState().flickr;
+        let img = findInFlickrData(flickrData.items, this.state.src)[0];
+        let isSelected = isImageSelected(selected, img.media.m);
         let holderHeight = FlickrImageHolder.getHolderHeight();
         this.setState({ isSelected, holderHeight });
     }
@@ -39,7 +40,10 @@ export default class FlickrImageHolder extends Component {
 
     static onImageClick(evt) {
         let target = evt.target || evt.srcElement;
-        Store.dispatch(imageSelected(target.src));
+        let { selected, flickrData } = Store.getState().flickr;
+        let image = findInFlickrData(flickrData.items, target.src)[0];
+        let isSelected = isImageSelected(selected, image.media.m);
+        Store.dispatch(updateSelected(image, isSelected));
     }
 
     static extractAuthorName(author) {

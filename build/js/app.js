@@ -21368,7 +21368,9 @@
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+	    var selected = void 0;
 	    switch (action.type) {
+
 	        case _flickrActions.DATALOADED:
 	            return Object.assign({}, state, {
 	                loading: false,
@@ -21376,18 +21378,32 @@
 	                loadingMessage: action.data.flickrData.title,
 	                selected: action.data.selected
 	            });
+
 	        case _flickrActions.UNABLETOCONNECTTOFLICKR:
 	            return Object.assign({}, state, {
 	                loading: false,
 	                loadingMessage: "Sorry, we can't connect to Flickr right now, please try again later"
 	            });
-	        case _flickrActions.IMAGECLICKED:
-	            var imageSrc = action.data;
-	            var selected = (0, _general.containsSelected)(state.selected, imageSrc) ? (0, _general.removeSelected)(state.selected, imageSrc) : state.selected.concat(imageSrc);
+
+	        case _flickrActions.ADDSELECTED:
+	            selected = state.selected.concat(action.data);
 	            (0, _general.saveToLocalStorage)(selected);
-	            return Object.assign({}, state, { selected: selected });
+	            return Object.assign({}, state, {
+	                selected: selected
+	            });
+
+	        case _flickrActions.REMOVESELECTED:
+	            selected = state.selected.filter(function (selected) {
+	                return selected.media.m !== action.data.media.m;
+	            });
+	            (0, _general.saveToLocalStorage)(selected);
+	            return Object.assign({}, state, {
+	                selected: selected
+	            });
+
 	        case _flickrActions.WINDOWWIDTHCHANGE:
 	            return state;
+
 	        default:
 	            return state;
 	    }
@@ -21433,11 +21449,13 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.WINDOWWIDTHCHANGE = exports.IMAGECLICKED = exports.UNABLETOCONNECTTOFLICKR = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
+	exports.WINDOWWIDTHCHANGE = exports.REMOVESELECTED = exports.ADDSELECTED = exports.UNABLETOCONNECTTOFLICKR = exports.DATALOADED = exports.RETRIEVEDATA = undefined;
 	exports.getFlickrImages = getFlickrImages;
+	exports.updateSelected = updateSelected;
 	exports.dataLoaded = dataLoaded;
 	exports.unableToConnectToFlickr = unableToConnectToFlickr;
-	exports.imageSelected = imageSelected;
+	exports.addSelected = addSelected;
+	exports.removeSelected = removeSelected;
 	exports.windowWidthChange = windowWidthChange;
 
 	var _getFlickrJson = __webpack_require__(187);
@@ -21448,24 +21466,55 @@
 
 	var RETRIEVEDATA = exports.RETRIEVEDATA = "RETRIEVEDATA";
 	function getFlickrImages(tag) {
+
 	    var flickrData = void 0;
+
+	    // get favourited images saved in local storage
 	    var savedData = (0, _general.getFromLocalStorage)();
+
 	    return function (dispatch) {
 	        (0, _getFlickrJson.getFlickrJson)(tag).then(function (data) {
+
+	            // store data from flickr
 	            flickrData = data;
+
+	            // check to see which from the saved images are in the data from flickr
+	            var inFlickrData = savedData.filter(function (selected) {
+	                return !!(0, _general.findInFlickrData)(flickrData.items, selected.media.m).length;
+	            });
+
+	            // find images that aren't in the data from flicr
+	            var notInData = savedData.filter(function (selected) {
+	                return !(0, _general.findInFlickrData)(inFlickrData, selected.media.m).length;
+	            });
+
+	            // append items that aren't in the data from flickr so they still appear
+	            data.items = notInData.concat(data.items);
+
+	            // load all the images into cache
 	            return (0, _general.loadImages)(data.items);
 	        }).then(function (images) {
+
+	            // add width and height to image data to assist with rendering
 	            var data = Object.assign({}, flickrData, {
-	                items: (0, _general.filterImages)(images, flickrData.items)
+	                items: (0, _general.addImageDimensionsToData)(images, flickrData.items)
 	            });
 	            var result = {
 	                flickrData: data,
 	                selected: savedData
 	            };
+
+	            // dispatch modified data and saved data to store
 	            dispatch(dataLoaded(result));
 	        }).catch(function (err) {
 	            dispatch(unableToConnectToFlickr());
 	        });
+	    };
+	}
+
+	function updateSelected(selected, isSelected) {
+	    return function (dispatch) {
+	        isSelected ? dispatch(removeSelected(selected)) : dispatch(addSelected(selected));
 	    };
 	}
 
@@ -21479,9 +21528,14 @@
 	    return { type: UNABLETOCONNECTTOFLICKR };
 	}
 
-	var IMAGECLICKED = exports.IMAGECLICKED = "IMAGECLICKED";
-	function imageSelected(data) {
-	    return { data: data, type: IMAGECLICKED };
+	var ADDSELECTED = exports.ADDSELECTED = "ADDSELECTED";
+	function addSelected(data) {
+	    return { data: data, type: ADDSELECTED };
+	}
+
+	var REMOVESELECTED = exports.REMOVESELECTED = "REMOVESELECTED";
+	function removeSelected(data) {
+	    return { data: data, type: REMOVESELECTED };
 	}
 
 	var WINDOWWIDTHCHANGE = exports.WINDOWWIDTHCHANGE = "WINDOWWIDTHCHANGE";
@@ -21505,6 +21559,7 @@
 	function getFlickrJson(tag) {
 
 	    return new Promise(function (resolve, reject) {
+
 	        var script = document.createElement("script");
 	        script.src = "http://api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=flickrcb&tags=" + tag;
 	        document.head.appendChild(script);
@@ -21513,11 +21568,10 @@
 	        window.flickrcb = function () {
 	            setTimeout(function () {
 	                reject("api.flickr.com took too long to respond");
-	                delete window.flickrcb; // this message will self destruct
 	            }, 2000);
 	            return function (data) {
 	                resolve(data);
-	                delete window.flickrcb;
+	                delete window.flickrcb; // this message will self destruct
 	            };
 	        }();
 	    });
@@ -22528,14 +22582,15 @@
 	    value: true
 	});
 	exports.createReactKey = createReactKey;
-	exports.removeSelected = removeSelected;
-	exports.containsSelected = containsSelected;
+	exports.findInFlickrData = findInFlickrData;
+	exports.isImageSelected = isImageSelected;
+	exports.removeFromSelected = removeFromSelected;
 	exports.addLoadListener = addLoadListener;
 	exports.removeLoadListener = removeLoadListener;
 	exports.loadImage = loadImage;
 	exports.loadImages = loadImages;
 	exports.filterImageHeight = filterImageHeight;
-	exports.filterImages = filterImages;
+	exports.addImageDimensionsToData = addImageDimensionsToData;
 	exports.getWindowWidth = getWindowWidth;
 	exports.getHolderHeight = getHolderHeight;
 	exports.debounce = debounce;
@@ -22545,14 +22600,22 @@
 	    return Math.random().toString(16).substr(2, 9);
 	}
 
-	function removeSelected(selected, src) {
-	    return selected.filter(function (selectedSrc) {
-	        return selectedSrc !== src;
+	function findInFlickrData(flickrData, src) {
+	    return flickrData.filter(function (data) {
+	        return data.media.m === src;
 	    });
 	}
 
-	function containsSelected(selected, src) {
-	    return ~selected.indexOf(src);
+	function isImageSelected(selected, target) {
+	    return !!selected.filter(function (data) {
+	        return data.media.m === target;
+	    }).length;
+	}
+
+	function removeFromSelected(selected, src) {
+	    return selected.filter(function (data) {
+	        return data.media.m === src;
+	    });
 	}
 
 	function addLoadListener(el, fn) {
@@ -22593,7 +22656,7 @@
 	    });
 	}
 
-	function filterImages(images, flickrData) {
+	function addImageDimensionsToData(images, flickrData) {
 	    var imagesToDisplay = filterImageHeight(images);
 	    return flickrData.map(function (data) {
 	        var match = imagesToDisplay.filter(function (img) {
@@ -22812,7 +22875,7 @@
 	        var height = props.height;
 
 	        var holderHeight = FlickrImageHolder.getHolderHeight();
-	        _this.state = { src: src, author: author, date_taken: date_taken, link: link, width: width, height: height, holderHeight: holderHeight, isSelected: false };
+	        _this.state = { src: src, author: author, date_taken: date_taken, link: link, width: width, height: height, holderHeight: holderHeight, isSelected: (0, _general.isImageSelected)(_flickrStore2.default.getState().flickr.selected, src) };
 	        _flickrStore2.default.subscribe(_this.onStoreUpdate.bind(_this));
 	        return _this;
 	    }
@@ -22828,9 +22891,13 @@
 	    }, {
 	        key: "onStoreUpdate",
 	        value: function onStoreUpdate() {
-	            var selected = _flickrStore2.default.getState().flickr.selected;
+	            var _Store$getState$flick = _flickrStore2.default.getState().flickr;
 
-	            var isSelected = (0, _general.containsSelected)(selected, this.state.src);
+	            var selected = _Store$getState$flick.selected;
+	            var flickrData = _Store$getState$flick.flickrData;
+
+	            var img = (0, _general.findInFlickrData)(flickrData.items, this.state.src)[0];
+	            var isSelected = (0, _general.isImageSelected)(selected, img.media.m);
 	            var holderHeight = FlickrImageHolder.getHolderHeight();
 	            this.setState({ isSelected: isSelected, holderHeight: holderHeight });
 	        }
@@ -22868,7 +22935,15 @@
 	        key: "onImageClick",
 	        value: function onImageClick(evt) {
 	            var target = evt.target || evt.srcElement;
-	            _flickrStore2.default.dispatch((0, _flickrActions.imageSelected)(target.src));
+
+	            var _Store$getState$flick2 = _flickrStore2.default.getState().flickr;
+
+	            var selected = _Store$getState$flick2.selected;
+	            var flickrData = _Store$getState$flick2.flickrData;
+
+	            var image = (0, _general.findInFlickrData)(flickrData.items, target.src)[0];
+	            var isSelected = (0, _general.isImageSelected)(selected, image.media.m);
+	            _flickrStore2.default.dispatch((0, _flickrActions.updateSelected)(image, isSelected));
 	        }
 	    }, {
 	        key: "extractAuthorName",

@@ -1,4 +1,6 @@
-var path = require("path");
+import "babel-core/register";
+import path from "path";
+
 module.exports = {
     context : path.resolve("src"),
     entry : {

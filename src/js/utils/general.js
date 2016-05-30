@@ -2,12 +2,16 @@ export function createReactKey() {
     return Math.random().toString(16).substr(2, 9);
 }
 
-export function removeSelected(selected, src) {
-    return selected.filter(selectedSrc => selectedSrc !== src);
+export function findInFlickrData(flickrData, src) {
+    return flickrData.filter(data => data.media.m === src);
 }
 
-export function containsSelected(selected, src) {
-    return ~selected.indexOf(src);
+export function isImageSelected(selected, target) {
+    return !!selected.filter(data => data.media.m === target).length;
+}
+
+export function removeFromSelected(selected, src) {
+    return selected.filter(data => data.media.m === src);
 }
 
 export function addLoadListener(el, fn) {
@@ -41,7 +45,7 @@ export function filterImageHeight(images) {
     return images.filter(img => img.height <= 300);
 }
 
-export function filterImages(images, flickrData) {
+export function addImageDimensionsToData(images, flickrData) {
     let imagesToDisplay = filterImageHeight(images);
     return flickrData.map(data => {
         let match = imagesToDisplay.filter(img => img.src === data.media.m).pop();
