@@ -4,13 +4,13 @@ A simple Flickr image app built with React and Redux.
 
 ### Uses
 
-Node: v4.4.5
+Node: v6.2.0
 
 Build: Gulp, Webpack, Babel 6
 
 Tests: Karma, Mocha, Chai, React addons test utils
 
-CSS : Bootstrap 4 light (my lightweight custom build)
+CSS : Bootstrap 4 light (lightweight custom build)
 
 ### To run
 
@@ -26,22 +26,21 @@ Run `gulp build:production` to build HTML, CSS and JavaScript using `Webpack` in
 
 ### To test
 
-Run `npm test` to test in Chrome, Firefox, IE10 and IE9 (haven't upgraded my IE10 yet because it has more accurate IE9 emulation than IE11 and above!)
-Caveat: Slower machines may struggle opening up multiple browsers at once and completing all tests so if you get any errors consider editing the `gulpfile` and running the test against one or two at a time.
+Run `npm test` to test in Chrome, Firefox, IE10 and IE9 (haven't upgraded my IE10 yet because it has more accurate IE9 emulation than IE11 and above!). If you see an error in one of the browsers consider editing the `gulpfile` and running the test against just one or two browsers at a time
 
 ### Notes
 
-The app is fully responsive and works fine on IE9+ and the mobile devices I tested it on (Safari and Android Chrome).
+The app is fully responsive and works fine on IE9+ and mobile Safari and Chrome.
 
 ##### Challenges
 
-There was a bug in the initial code snippet. The snippet was wrapped in an IIFE so the callback to the FLickr API in the query string would not be accessible when the script is appended to the document head.
+There was a bug in the initial code snippet from the task. The snippet was wrapped in an IIFE so the callback to the Flickr API in the query string would not be accessible when the script is appended to the document head.
 
 The images come back all shapes and sizes from the Flickr API so I did some extra work whilst loading them into cache before displaying to grab the dimensions so I could position them in some kind of semi-uniform way.
 
-Any clicked upon images are favourited - indicated by the dashed line around the image holder. This then saves the image in localstorage. When the app loads localstorage is checked and all the images favourited are compared against the ones returned from the Flickr API. Any that exist in both are filtered out from the saved favourited array and the remainding are appended to the image array sent from Flickr so as not to show the same image twice.
+Any clicked upon images are favourited (or unfavourited if already selected) - indicated by the dashed line around the image holder and the favourited message that appears. Clicking an image updates localstorage with the favourited images. When the app loads localstorage is checked and all the images favourited are compared against the ones returned from the Flickr API. Any that exist in both are filtered out from the saved favourited array and the remainding are appended to the image array sent from Flickr so as not to show the same image twice.
 
-I would have liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. Also some extra error checking would have been useful whilst loading images into cache to check images favourited haven't been removed from Flickr since the page was last loaded. Some more styling wouldn't have gone amiss either!
+I would've liked to have built a more comprehensive test suite but I had spent 10+ hours on the task so decided to stick with the stateless components and key utility functions. Also some extra error checking would have been useful whilst loading images into cache to check images favourited haven't been removed from Flickr since the page was last loaded. Some more styling wouldn't have gone amiss either!
 
 
 
