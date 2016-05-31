@@ -26,7 +26,7 @@ Run `gulp build:production` to build HTML, CSS and JavaScript using `Webpack` in
 
 ### To test
 
-Run `npm test` to test in Chrome, Firefox, IE10 and IE9 (haven't upgraded my IE10 yet because it has more accurate IE9 emulation than IE11 and above!). If you see an error in one of the browsers consider editing the `gulpfile` and running the test against just one or two browsers at a time
+Run `npm test` to test in Chrome, Firefox, IE10 and IE9 (haven't upgraded my IE10 yet because it has more accurate IE9 emulation than IE11 and above!). If you see an error in one of the browsers consider editing the `gulpfile` and running the test against just one or two browsers at a time as Karma isn't the most reliable when it spawns multiple browsers open at once.
 
 ### Notes
 
