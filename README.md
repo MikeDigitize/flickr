@@ -10,7 +10,7 @@ Build: Gulp, Webpack, Babel 6
 
 Tests: Karma, Mocha, Chai, React addons test utils
 
-CSS : Bootstrap 4 light (lightweight custom build)
+CSS : Bootstrap 4 (custom build)
 
 ### To run
 
